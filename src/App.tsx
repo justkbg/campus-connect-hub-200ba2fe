@@ -12,6 +12,11 @@ import SchedulePage from "./pages/SchedulePage";
 import ServicesPage from "./pages/ServicesPage";
 import ProfilePage from "./pages/ProfilePage";
 import AdminPage from "./pages/AdminPage";
+import NotificationsPage from "./pages/NotificationsPage";
+import MarketplacePage from "./pages/MarketplacePage";
+import ResourcesPage from "./pages/ResourcesPage";
+import LecturerPortalPage from "./pages/LecturerPortalPage";
+import CourseRepPortalPage from "./pages/CourseRepPortalPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +37,11 @@ const App = () => (
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/marketplace" element={<MarketplacePage />} />
+          <Route path="/resources" element={<ResourcesPage />} />
+          <Route path="/lecturer" element={<LecturerPortalPage />} />
+          <Route path="/course-rep" element={<CourseRepPortalPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

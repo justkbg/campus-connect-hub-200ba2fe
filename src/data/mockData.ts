@@ -11,10 +11,23 @@ export const currentUser = {
 };
 
 export const announcements = [
-  { id: 1, title: "INFO 201 moved to LT3", body: "Effective immediately, all INFO 201 lectures will hold in LT3. Please take note.", type: "urgent" as const, time: "2h ago", department: "IT Department" },
-  { id: 2, title: "Registration closes Friday", body: "Course registration for the semester closes this Friday at 5:00 PM. Complete yours now.", type: "important" as const, time: "5h ago", department: "Academic Affairs" },
-  { id: 3, title: "Mid-semester timetable released", body: "The mid-semester examination timetable is now available on the student portal.", type: "info" as const, time: "1d ago", department: "Examinations Office" },
-  { id: 4, title: "Library extended hours", body: "The library will operate extended hours (7AM–10PM) during exam preparation week.", type: "info" as const, time: "2d ago", department: "Library Services" },
+  { id: 1, title: "INFO 201 moved to LT3", body: "Effective immediately, all INFO 201 lectures will hold in LT3. Please take note.", type: "urgent" as const, time: "2h ago", department: "IT Department", read: false },
+  { id: 2, title: "Registration closes Friday", body: "Course registration for the semester closes this Friday at 5:00 PM. Complete yours now.", type: "important" as const, time: "5h ago", department: "Academic Affairs", read: false },
+  { id: 3, title: "Mid-semester timetable released", body: "The mid-semester examination timetable is now available on the student portal.", type: "info" as const, time: "1d ago", department: "Examinations Office", read: true },
+  { id: 4, title: "Library extended hours", body: "The library will operate extended hours (7AM–10PM) during exam preparation week.", type: "info" as const, time: "2d ago", department: "Library Services", read: true },
+  { id: 5, title: "Emergency: Water supply disruption", body: "Water supply to the main campus will be disrupted on Wednesday from 6AM to 2PM for maintenance.", type: "urgent" as const, time: "3h ago", department: "Facilities Management", read: false },
+  { id: 6, title: "New WiFi zones activated", body: "Three new high-speed WiFi zones are now active at Banking Square, Sports Complex, and Student Center.", type: "info" as const, time: "3d ago", department: "ICT Services", read: true },
+];
+
+export const notifications = [
+  { id: 1, type: "announcement" as const, title: "INFO 201 moved to LT3", body: "All lectures now in LT3", time: "2h ago", read: false, icon: "Megaphone" },
+  { id: 2, type: "alert" as const, title: "Registration closes Friday", body: "Complete registration by 5:00 PM", time: "5h ago", read: false, icon: "AlertTriangle" },
+  { id: 3, type: "event" as const, title: "Career Fair 2025 tomorrow", body: "Main Auditorium, 9:00 AM", time: "6h ago", read: false, icon: "Calendar" },
+  { id: 4, type: "class" as const, title: "ACC 102 venue changed", body: "Now in LT5 instead of LT2", time: "1d ago", read: true, icon: "MapPin" },
+  { id: 5, type: "system" as const, title: "Timetable updated", body: "Your mid-semester timetable is ready", time: "1d ago", read: true, icon: "Clock" },
+  { id: 6, type: "announcement" as const, title: "Library extended hours", body: "7AM–10PM during exam week", time: "2d ago", read: true, icon: "BookOpen" },
+  { id: 7, type: "alert" as const, title: "Emergency: Water disruption", body: "Wednesday 6AM-2PM maintenance", time: "3h ago", read: false, icon: "AlertTriangle" },
+  { id: 8, type: "event" as const, title: "Coding Bootcamp registration", body: "ICT Lab, May 1 at 2:00 PM", time: "3d ago", read: true, icon: "Calendar" },
 ];
 
 export const events = [
@@ -74,6 +87,37 @@ export const services = [
   { id: 9, name: "Signatures Office", category: "Offices", distance: "7 min", status: "closed" as const, icon: "PenTool" },
 ];
 
+export const marketplaceItems = [
+  { id: 1, title: "Database Systems Textbook", category: "Textbooks", price: "GH₵ 85", seller: "Ama K.", condition: "Like New", image: "", posted: "1d ago" },
+  { id: 2, title: "HP Laptop – 8GB RAM", category: "Gadgets", price: "GH₵ 2,800", seller: "Kwesi M.", condition: "Used – Good", image: "", posted: "2d ago" },
+  { id: 3, title: "Calculus Tutoring", category: "Tutoring", price: "GH₵ 50/hr", seller: "Nana A.", condition: "Service", image: "", posted: "3h ago" },
+  { id: 4, title: "Scientific Calculator", category: "Gadgets", price: "GH₵ 120", seller: "Efua D.", condition: "New", image: "", posted: "5h ago" },
+  { id: 5, title: "Marketing Principles Notes", category: "Textbooks", price: "GH₵ 25", seller: "Yaw B.", condition: "Digital", image: "", posted: "1d ago" },
+  { id: 6, title: "Graphic Design Services", category: "Services", price: "GH₵ 100", seller: "Akua R.", condition: "Service", image: "", posted: "4d ago" },
+  { id: 7, title: "Accounting Past Questions", category: "Textbooks", price: "GH₵ 15", seller: "Kofi T.", condition: "Digital", image: "", posted: "2d ago" },
+  { id: 8, title: "Internship Opportunity – FinTech", category: "Opportunities", price: "Free", seller: "Career Office", condition: "Listing", image: "", posted: "6h ago" },
+];
+
+export const resources = [
+  { id: 1, title: "INFO 201 – Lecture Notes Week 1-6", category: "Lecture Notes", course: "INFO 201", type: "PDF", downloads: 342, uploadedBy: "Dr. Ama Serwaa" },
+  { id: 2, title: "ACC 102 Past Questions 2023", category: "Past Questions", course: "ACC 102", type: "PDF", downloads: 567, uploadedBy: "Student Rep" },
+  { id: 3, title: "Course Registration Form", category: "Forms", course: "General", type: "Form", downloads: 1200, uploadedBy: "Academic Affairs" },
+  { id: 4, title: "MKT 103 – Mid-Sem Study Guide", category: "Lecture Notes", course: "MKT 103", type: "PDF", downloads: 189, uploadedBy: "Dr. Nana Osei" },
+  { id: 5, title: "Student Portal Guide", category: "Guides", course: "General", type: "PDF", downloads: 890, uploadedBy: "ICT Services" },
+  { id: 6, title: "INFO 205 – Lab Manual", category: "Lecture Notes", course: "INFO 205", type: "PDF", downloads: 234, uploadedBy: "Prof. Kwame Asante" },
+  { id: 7, title: "Exam Deferral Application", category: "Forms", course: "General", type: "Form", downloads: 445, uploadedBy: "Examinations Office" },
+  { id: 8, title: "UPSA Student Handbook 2024/25", category: "Guides", course: "General", type: "PDF", downloads: 2100, uploadedBy: "Student Affairs" },
+];
+
+export const officialLinks = [
+  { id: 1, title: "Student Portal", url: "#", icon: "ExternalLink" },
+  { id: 2, title: "E-Learning Platform", url: "#", icon: "Monitor" },
+  { id: 3, title: "Library Catalog", url: "#", icon: "BookOpen" },
+  { id: 4, title: "Fees Payment", url: "#", icon: "CreditCard" },
+  { id: 5, title: "UPSA Website", url: "#", icon: "Globe" },
+  { id: 6, title: "Results Checker", url: "#", icon: "FileCheck" },
+];
+
 export const adminStats = {
   activeUsers: 2847,
   announcementsSent: 156,
@@ -86,6 +130,7 @@ export const adminStats = {
     { action: "Event created", detail: "Career Fair 2025", time: "5h ago" },
     { action: "User registered", detail: "15 new students", time: "1d ago" },
     { action: "Report generated", detail: "Weekly engagement report", time: "2d ago" },
+    { action: "Emergency alert", detail: "Water supply disruption", time: "3h ago" },
   ],
 };
 

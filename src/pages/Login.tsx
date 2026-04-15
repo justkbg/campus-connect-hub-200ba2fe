@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Zap } from "lucide-react";
 
-const roles = ["Student", "Lecturer", "Admin"];
+const roles = ["Student", "Lecturer", "Course Rep", "Admin"];
 
 export default function Login() {
   const navigate = useNavigate();
@@ -13,6 +13,8 @@ export default function Login() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (role === "Admin") navigate("/admin");
+    else if (role === "Lecturer") navigate("/lecturer");
+    else if (role === "Course Rep") navigate("/course-rep");
     else navigate("/home");
   };
 
@@ -23,16 +25,23 @@ export default function Login() {
           <ArrowLeft className="w-5 h-5 text-foreground" />
         </button>
 
-        <h1 className="text-2xl font-bold text-foreground mb-1">Welcome back</h1>
-        <p className="text-sm text-muted-foreground mb-8">Sign in to your UPSA account</p>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
+            <Zap className="w-5 h-5 text-primary-foreground" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Welcome back</h1>
+            <p className="text-xs text-muted-foreground">Sign in to your UPSA account</p>
+          </div>
+        </div>
 
         {/* Role selector */}
-        <div className="flex gap-2 mb-6 p-1 bg-muted rounded-2xl">
+        <div className="flex gap-1.5 mb-6 p-1 bg-muted rounded-2xl">
           {roles.map((r) => (
             <button
               key={r}
               onClick={() => setRole(r)}
-              className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all ${
+              className={`flex-1 py-2 text-[11px] font-semibold rounded-xl transition-all ${
                 role === r ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
               }`}
             >
@@ -44,11 +53,11 @@ export default function Login() {
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-muted-foreground mb-1.5">
-              {role === "Student" ? "Student ID" : "Email"}
+              {role === "Student" ? "Student ID" : role === "Course Rep" ? "Student ID" : "UPSA Email"}
             </label>
             <input
               type="text"
-              placeholder={role === "Student" ? "e.g. STU-2024-0847" : "email@upsa.edu.gh"}
+              placeholder={role === "Student" || role === "Course Rep" ? "e.g. STU-2024-0847" : "email@upsa.edu.gh"}
               className="w-full px-4 py-3 rounded-xl bg-muted border-0 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
