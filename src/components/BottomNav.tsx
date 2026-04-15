@@ -1,6 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Map, MessageSquare, Calendar, User } from "lucide-react";
+import { Home, Map, MessageSquare, Calendar, User, Bell } from "lucide-react";
 import { motion } from "framer-motion";
+import { notifications } from "@/data/mockData";
+
+const unreadCount = notifications.filter(n => !n.read).length;
 
 const tabs = [
   { path: "/home", icon: Home, label: "Home" },
@@ -29,6 +32,14 @@ export default function BottomNav() {
                   />
                 )}
                 <Icon className={`w-5 h-5 relative z-10 transition-colors ${active ? "text-primary" : "text-muted-foreground"}`} />
+                {/* Notification badge on Home icon */}
+                {path === "/home" && unreadCount > 0 && (
+                  <Link to="/notifications" onClick={(e) => e.stopPropagation()}>
+                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center z-20">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  </Link>
+                )}
               </div>
               <span className={`text-[10px] font-medium transition-colors ${active ? "text-primary" : "text-muted-foreground"}`}>
                 {label}

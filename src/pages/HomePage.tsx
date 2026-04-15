@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import { Bell, Search, MapPin, MessageSquare, Calendar, Briefcase, ChevronRight, Clock, AlertTriangle, Megaphone } from "lucide-react";
+import { Bell, Search, MapPin, MessageSquare, Calendar, Briefcase, ChevronRight, Clock, AlertTriangle, Megaphone, BookOpen, ShoppingBag, Link2, FolderOpen } from "lucide-react";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
 import StatusBadge from "@/components/StatusBadge";
-import { currentUser, announcements, events, todaySchedule } from "@/data/mockData";
+import { currentUser, announcements, events, todaySchedule, notifications } from "@/data/mockData";
 import { Link } from "react-router-dom";
 
 const quickActions = [
@@ -11,12 +11,18 @@ const quickActions = [
   { icon: MapPin, label: "Map", path: "/map", color: "bg-accent/10 text-accent" },
   { icon: Calendar, label: "Timetable", path: "/schedule", color: "bg-success/10 text-success" },
   { icon: Briefcase, label: "Services", path: "/services", color: "bg-warning/10 text-warning" },
+  { icon: FolderOpen, label: "Resources", path: "/resources", color: "bg-primary/10 text-primary" },
+  { icon: ShoppingBag, label: "Market", path: "/marketplace", color: "bg-accent/10 text-accent" },
+  { icon: Link2, label: "Links", path: "/resources", color: "bg-success/10 text-success" },
+  { icon: BookOpen, label: "Notes", path: "/resources", color: "bg-warning/10 text-warning" },
 ];
 
 const announcementIcons = { urgent: AlertTriangle, important: Megaphone, info: Bell };
 
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
 const fadeUp = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.35 } } };
+
+const unreadCount = notifications.filter(n => !n.read).length;
 
 export default function HomePage() {
   const nextClass = todaySchedule.find((c) => c.status === "upcoming" || c.status === "ongoing");
@@ -33,9 +39,19 @@ export default function HomePage() {
               <p className="text-primary-foreground/60 text-xs font-medium">{now.toLocaleDateString("en-GB", { weekday: "long", month: "long", day: "numeric" })}</p>
               <h1 className="text-xl font-bold text-primary-foreground mt-0.5">{greeting}, {currentUser.firstName} 👋</h1>
             </div>
-            <Link to="/profile" className="w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center">
-              <span className="text-sm font-bold text-primary-foreground">{currentUser.firstName[0]}</span>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link to="/notifications" className="relative w-10 h-10 rounded-full bg-primary-foreground/15 flex items-center justify-center">
+                <Bell className="w-4.5 h-4.5 text-primary-foreground" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center border-2 border-primary">
+                    {unreadCount}
+                  </span>
+                )}
+              </Link>
+              <Link to="/profile" className="w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center">
+                <span className="text-sm font-bold text-primary-foreground">{currentUser.firstName[0]}</span>
+              </Link>
+            </div>
           </div>
 
           {/* Next class card */}
@@ -57,14 +73,14 @@ export default function HomePage() {
 
         {/* Quick Actions */}
         <div className="px-5 -mt-4">
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-4 gap-2.5">
             {quickActions.map(({ icon: Icon, label, path, color }) => (
-              <Link key={path} to={path}
+              <Link key={label} to={path}
                 className="flex flex-col items-center gap-1.5 bg-card rounded-2xl p-3 shadow-card active:scale-95 transition-transform">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
                   <Icon className="w-5 h-5" />
                 </div>
-                <span className="text-[11px] font-medium text-foreground">{label}</span>
+                <span className="text-[10px] font-medium text-foreground">{label}</span>
               </Link>
             ))}
           </div>
@@ -82,7 +98,7 @@ export default function HomePage() {
         <motion.section variants={stagger} initial="hidden" animate="show" className="px-5 mt-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-foreground">Announcements</h2>
-            <span className="text-xs text-primary font-medium">See all</span>
+            <Link to="/notifications" className="text-xs text-primary font-medium">See all</Link>
           </div>
           <div className="space-y-2.5">
             {announcements.slice(0, 3).map((a) => {

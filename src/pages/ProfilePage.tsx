@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Settings, Bell, HelpCircle, LogOut, Moon, ChevronRight, BookOpen, Calendar, Flame } from "lucide-react";
+import { Settings, Bell, HelpCircle, LogOut, Moon, ChevronRight, BookOpen, Calendar, Flame, ShoppingBag, FolderOpen, Users, Shield } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import PageShell from "@/components/PageShell";
@@ -22,9 +22,17 @@ export default function ProfilePage() {
   ];
 
   const menuItems = [
-    { icon: Bell, label: "Notifications", action: () => {} },
-    { icon: Settings, label: "Settings", action: () => {} },
-    { icon: HelpCircle, label: "Support", action: () => {} },
+    { icon: Bell, label: "Notifications", path: "/notifications" },
+    { icon: FolderOpen, label: "Resources", path: "/resources" },
+    { icon: ShoppingBag, label: "Marketplace", path: "/marketplace" },
+    { icon: Settings, label: "Settings", path: "" },
+    { icon: HelpCircle, label: "Support", path: "" },
+  ];
+
+  const portalItems = [
+    { icon: Users, label: "Lecturer Portal", path: "/lecturer", desc: "Manage courses & students" },
+    { icon: Users, label: "Course Rep Portal", path: "/course-rep", desc: "Class notices & polls" },
+    { icon: Shield, label: "Admin Dashboard", path: "/admin", desc: "Campus management" },
   ];
 
   return (
@@ -64,22 +72,38 @@ export default function ProfilePage() {
             </button>
           </div>
 
-          {menuItems.map(({ icon: Icon, label, action }) => (
-            <button key={label} onClick={action} className="w-full bg-card rounded-2xl p-4 shadow-card flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center"><Icon className="w-4 h-4 text-foreground" /></div>
-              <span className="flex-1 text-left text-sm font-medium text-foreground">{label}</span>
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            </button>
+          {menuItems.map(({ icon: Icon, label, path }) => (
+            path ? (
+              <Link key={label} to={path} className="w-full bg-card rounded-2xl p-4 shadow-card flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center"><Icon className="w-4 h-4 text-foreground" /></div>
+                <span className="flex-1 text-left text-sm font-medium text-foreground">{label}</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </Link>
+            ) : (
+              <button key={label} className="w-full bg-card rounded-2xl p-4 shadow-card flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center"><Icon className="w-4 h-4 text-foreground" /></div>
+                <span className="flex-1 text-left text-sm font-medium text-foreground">{label}</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </button>
+            )
           ))}
 
-          {/* Admin link */}
-          <Link to="/admin" className="w-full bg-card rounded-2xl p-4 shadow-card flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center"><Settings className="w-4 h-4 text-primary" /></div>
-            <span className="flex-1 text-left text-sm font-medium text-foreground">Admin Dashboard</span>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-          </Link>
+          {/* Role portals */}
+          <div className="pt-3">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 px-1">Portals</p>
+            {portalItems.map(({ icon: Icon, label, path, desc }) => (
+              <Link key={label} to={path} className="w-full bg-card rounded-2xl p-4 shadow-card flex items-center gap-3 mb-2">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center"><Icon className="w-4 h-4 text-primary" /></div>
+                <div className="flex-1">
+                  <span className="text-sm font-medium text-foreground block">{label}</span>
+                  <span className="text-[11px] text-muted-foreground">{desc}</span>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </Link>
+            ))}
+          </div>
 
-          <button onClick={() => navigate("/")} className="w-full bg-destructive/10 rounded-2xl p-4 flex items-center gap-3 mt-4">
+          <button onClick={() => navigate("/")} className="w-full bg-destructive/10 rounded-2xl p-4 flex items-center gap-3 mt-2">
             <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center"><LogOut className="w-4 h-4 text-destructive" /></div>
             <span className="flex-1 text-left text-sm font-medium text-destructive">Sign Out</span>
           </button>
