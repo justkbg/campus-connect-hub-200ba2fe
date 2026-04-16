@@ -1,12 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search, MapPin, Navigation, Clock, Footprints, X, LocateFixed, Loader2 } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { Search, MapPin, Navigation, Clock, Footprints, X, LocateFixed, Loader2, Droplet, Printer, Landmark, Coffee, ArrowUpRight, ArrowRight, ArrowLeft, CornerUpRight, CornerUpLeft, Flag, Route } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
-import CampusMap, { upsaBuildings, UPSA_CENTER, CampusBuilding } from "@/components/CampusMap";
+import CampusMap, { upsaBuildings, UPSA_CENTER, CampusBuilding, RouteStep } from "@/components/CampusMap";
 import { todaySchedule } from "@/data/mockData";
 
 const categories = ["All", "Academic", "Services", "Administrative", "Social"];
+
+// Quick-service chips — match by keywords against building name
+type ServiceChip = { key: string; label: string; icon: typeof Droplet; match: (name: string) => boolean };
+const serviceChips: ServiceChip[] = [
+  { key: "washroom", label: "Washroom", icon: Droplet, match: (n) => /washroom|toilet|restroom/i.test(n) },
+  { key: "print", label: "Print", icon: Printer, match: (n) => /print/i.test(n) },
+  { key: "atm", label: "ATM", icon: Landmark, match: (n) => /atm|bank/i.test(n) },
+  { key: "cafe", label: "Cafeteria", icon: Coffee, match: (n) => /cafe|caf[eé]teria|food/i.test(n) },
+];
 
 // Fallback simulated position (used if geolocation denied/unavailable)
 const FALLBACK_POSITION: [number, number] = [5.65080, -0.17460];
@@ -42,6 +52,7 @@ function walkingTime(from: [number, number], to: [number, number]) {
 type GeoState = "idle" | "prompting" | "granted" | "denied" | "unavailable" | "off-campus";
 
 export default function MapPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [cat, setCat] = useState("All");
   const [selected, setSelected] = useState<CampusBuilding | null>(null);
@@ -49,9 +60,43 @@ export default function MapPage() {
   const [userPos, setUserPos] = useState<[number, number]>(FALLBACK_POSITION);
   const [accuracy, setAccuracy] = useState<number | null>(null);
   const [geoState, setGeoState] = useState<GeoState>("idle");
+  const [steps, setSteps] = useState<RouteStep[]>([]);
+  const [routeTotals, setRouteTotals] = useState<{ distance: number; duration: number } | null>(null);
   const watchIdRef = useRef<number | null>(null);
 
   const nextClass = todaySchedule.find((c) => c.status === "upcoming");
+
+  const findNearestService = (chip: ServiceChip) => {
+    const named = upsaBuildings.filter((b) => chip.match(b.name));
+    const pool = named.length ? named : upsaBuildings.filter((b) => b.category === "Services");
+    if (!pool.length) return null;
+    return pool
+      .map((b) => ({ b, d: haversineMeters(userPos, b.position) }))
+      .sort((a, z) => a.d - z.d)[0].b;
+  };
+
+  const handleServiceChip = (chip: ServiceChip) => {
+    const target = findNearestService(chip);
+    if (target) {
+      setSelected(target);
+      setRouting(true);
+    }
+  };
+
+  // Deep-link: ?to=<buildingId> auto-selects and routes
+  useEffect(() => {
+    const toId = searchParams.get("to");
+    if (!toId) return;
+    const target = upsaBuildings.find((b) => String(b.id) === toId);
+    if (target) {
+      setSelected(target);
+      setRouting(true);
+      const next = new URLSearchParams(searchParams);
+      next.delete("to");
+      setSearchParams(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const requestLocation = () => {
     if (!("geolocation" in navigator)) {
@@ -183,6 +228,25 @@ export default function MapPage() {
           </div>
         </div>
 
+        {/* Quick-service chips */}
+        <div className="px-5 mt-1 mb-3">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-5 px-5">
+            {serviceChips.map((chip) => {
+              const Icon = chip.icon;
+              return (
+                <button
+                  key={chip.key}
+                  onClick={() => handleServiceChip(chip)}
+                  className="flex items-center gap-1.5 bg-card border border-border rounded-full px-3 py-1.5 text-xs font-medium text-foreground shadow-card hover:shadow-premium hover:border-primary/30 active:scale-95 transition-all whitespace-nowrap flex-shrink-0"
+                >
+                  <Icon className="w-3.5 h-3.5 text-primary" />
+                  Nearest {chip.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Interactive Leaflet map */}
         <div className="mx-5 h-72 rounded-2xl overflow-hidden shadow-card relative z-0">
           <CampusMap
@@ -196,8 +260,66 @@ export default function MapPage() {
             userAccuracy={geoState === "granted" ? accuracy : null}
             routeFrom={userPos}
             routeTo={routeTo}
+            onRouteSteps={(s, totals) => {
+              setSteps(s);
+              setRouteTotals(totals);
+            }}
           />
         </div>
+
+        {/* Turn-by-turn steps */}
+        <AnimatePresence>
+          {routing && selected && steps.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              className="mx-5 mt-3 bg-card rounded-2xl shadow-card overflow-hidden"
+            >
+              <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
+                    <Route className="w-4 h-4 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-foreground">Turn-by-turn</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {routeTotals
+                        ? `${Math.round(routeTotals.distance)}m · ~${Math.max(1, Math.round(routeTotals.duration / 60))} min walk`
+                        : `${steps.length} steps`}
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[11px] text-muted-foreground truncate max-w-[120px]">to {selected.name}</span>
+              </div>
+              <ol className="divide-y divide-border max-h-64 overflow-y-auto">
+                {steps.map((s, i) => {
+                  const StepIcon =
+                    s.type === "arrive" ? Flag :
+                    s.type === "depart" ? ArrowUpRight :
+                    s.modifier?.includes("right") ? CornerUpRight :
+                    s.modifier?.includes("left") ? CornerUpLeft :
+                    ArrowRight;
+                  return (
+                    <li key={i} className="flex items-start gap-3 px-4 py-2.5">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        s.type === "arrive" ? "bg-success/10 text-success" : "bg-primary/10 text-primary"
+                      }`}>
+                        <StepIcon className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-foreground leading-snug">{s.instruction}</p>
+                      </div>
+                      <span className="text-[10px] text-muted-foreground flex-shrink-0 mt-1">
+                        {i + 1}/{steps.length}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Selected detail */}
         <AnimatePresence>

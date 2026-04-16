@@ -153,6 +153,15 @@ function FitRoute({ path }: { path: [number, number][] | null }) {
   return null;
 }
 
+export type RouteStep = {
+  instruction: string;
+  distance: number;
+  duration: number;
+  modifier?: string;
+  type?: string;
+  name?: string;
+};
+
 type Props = {
   buildings?: CampusBuilding[];
   selectedId?: number | null;
@@ -161,7 +170,35 @@ type Props = {
   routeTo?: [number, number] | null;
   userPosition?: [number, number] | null;
   userAccuracy?: number | null;
+  onRouteSteps?: (steps: RouteStep[], totals: { distance: number; duration: number } | null) => void;
 };
+
+function bearingToCardinal(b: number) {
+  const dirs = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
+  return dirs[Math.round(((b % 360) + 360) % 360 / 45) % 8];
+}
+
+function humanizeStep(step: any): string {
+  const m = step?.maneuver ?? {};
+  const type = m.type as string | undefined;
+  const modifier = m.modifier as string | undefined;
+  const name = step?.name && String(step.name).trim() ? step.name : "";
+  const dist = Math.round(step?.distance ?? 0);
+  const distStr = dist >= 1000 ? `${(dist / 1000).toFixed(1)}km` : `${dist}m`;
+
+  if (type === "depart") {
+    const dir = m.bearing_after != null ? bearingToCardinal(m.bearing_after) : "";
+    return `Head ${dir || "forward"}${name ? ` on ${name}` : ""} for ${distStr}`;
+  }
+  if (type === "arrive") return "Arrive at destination";
+  if (type === "roundabout" || type === "rotary") {
+    return `Take the roundabout${modifier ? ` ${modifier}` : ""}${name ? ` onto ${name}` : ""} • ${distStr}`;
+  }
+  if (modifier) {
+    return `Turn ${modifier}${name ? ` onto ${name}` : ""} • ${distStr}`;
+  }
+  return `Continue${name ? ` on ${name}` : ""} • ${distStr}`;
+}
 
 export default function CampusMap({
   buildings = upsaBuildings,
@@ -171,6 +208,7 @@ export default function CampusMap({
   routeTo,
   userPosition,
   userAccuracy,
+  onRouteSteps,
 }: Props) {
   const selected = buildings.find((b) => b.id === selectedId) ?? null;
   const [routePath, setRoutePath] = useState<[number, number][] | null>(null);
@@ -181,23 +219,44 @@ export default function CampusMap({
     let cancelled = false;
     if (!routeFrom || !routeTo) {
       setRoutePath(null);
+      onRouteSteps?.([], null);
       return;
     }
     setRouting(true);
-    const url = `https://router.project-osrm.org/route/v1/foot/${routeFrom[1]},${routeFrom[0]};${routeTo[1]},${routeTo[0]}?overview=full&geometries=geojson`;
+    const url = `https://router.project-osrm.org/route/v1/foot/${routeFrom[1]},${routeFrom[0]};${routeTo[1]},${routeTo[0]}?overview=full&geometries=geojson&steps=true`;
     fetch(url)
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
-        const coords = data?.routes?.[0]?.geometry?.coordinates;
+        const route = data?.routes?.[0];
+        const coords = route?.geometry?.coordinates;
         if (Array.isArray(coords)) {
           setRoutePath(coords.map((c: [number, number]) => [c[1], c[0]]));
         } else {
           setRoutePath([routeFrom, routeTo]);
         }
+        const legs = route?.legs ?? [];
+        const allSteps: any[] = legs.flatMap((l: any) => l.steps ?? []);
+        const humanSteps: RouteStep[] = allSteps
+          .map((s) => ({
+            instruction: humanizeStep(s),
+            distance: Math.round(s?.distance ?? 0),
+            duration: Math.round(s?.duration ?? 0),
+            modifier: s?.maneuver?.modifier,
+            type: s?.maneuver?.type,
+            name: s?.name,
+          }))
+          .filter((s, idx) => s.type === "arrive" || s.distance > 0 || idx === 0);
+        onRouteSteps?.(
+          humanSteps,
+          route ? { distance: Math.round(route.distance), duration: Math.round(route.duration) } : null
+        );
       })
       .catch(() => {
-        if (!cancelled) setRoutePath([routeFrom, routeTo]);
+        if (!cancelled) {
+          setRoutePath([routeFrom, routeTo]);
+          onRouteSteps?.([], null);
+        }
       })
       .finally(() => !cancelled && setRouting(false));
     return () => {
