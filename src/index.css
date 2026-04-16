@@ -133,3 +133,19 @@
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
+
+/* Leaflet overrides for premium look */
+.leaflet-container {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 10px 30px -10px hsl(217 91% 53% / 0.25);
+}
+.leaflet-popup-content {
+  margin: 10px 14px;
+}
+.leaflet-control-attribution {
+  font-size: 9px !important;
+  background: rgba(255,255,255,0.7) !important;
+}
