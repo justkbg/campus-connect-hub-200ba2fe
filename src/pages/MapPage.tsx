@@ -228,6 +228,25 @@ export default function MapPage() {
           </div>
         </div>
 
+        {/* Quick-service chips */}
+        <div className="px-5 mt-1 mb-3">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-5 px-5">
+            {serviceChips.map((chip) => {
+              const Icon = chip.icon;
+              return (
+                <button
+                  key={chip.key}
+                  onClick={() => handleServiceChip(chip)}
+                  className="flex items-center gap-1.5 bg-card border border-border rounded-full px-3 py-1.5 text-xs font-medium text-foreground shadow-card hover:shadow-premium hover:border-primary/30 active:scale-95 transition-all whitespace-nowrap flex-shrink-0"
+                >
+                  <Icon className="w-3.5 h-3.5 text-primary" />
+                  Nearest {chip.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Interactive Leaflet map */}
         <div className="mx-5 h-72 rounded-2xl overflow-hidden shadow-card relative z-0">
           <CampusMap
@@ -241,8 +260,66 @@ export default function MapPage() {
             userAccuracy={geoState === "granted" ? accuracy : null}
             routeFrom={userPos}
             routeTo={routeTo}
+            onRouteSteps={(s, totals) => {
+              setSteps(s);
+              setRouteTotals(totals);
+            }}
           />
         </div>
+
+        {/* Turn-by-turn steps */}
+        <AnimatePresence>
+          {routing && selected && steps.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              className="mx-5 mt-3 bg-card rounded-2xl shadow-card overflow-hidden"
+            >
+              <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
+                    <Route className="w-4 h-4 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-foreground">Turn-by-turn</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {routeTotals
+                        ? `${Math.round(routeTotals.distance)}m · ~${Math.max(1, Math.round(routeTotals.duration / 60))} min walk`
+                        : `${steps.length} steps`}
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[11px] text-muted-foreground truncate max-w-[120px]">to {selected.name}</span>
+              </div>
+              <ol className="divide-y divide-border max-h-64 overflow-y-auto">
+                {steps.map((s, i) => {
+                  const StepIcon =
+                    s.type === "arrive" ? Flag :
+                    s.type === "depart" ? ArrowUpRight :
+                    s.modifier?.includes("right") ? CornerUpRight :
+                    s.modifier?.includes("left") ? CornerUpLeft :
+                    ArrowRight;
+                  return (
+                    <li key={i} className="flex items-start gap-3 px-4 py-2.5">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        s.type === "arrive" ? "bg-success/10 text-success" : "bg-primary/10 text-primary"
+                      }`}>
+                        <StepIcon className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-foreground leading-snug">{s.instruction}</p>
+                      </div>
+                      <span className="text-[10px] text-muted-foreground flex-shrink-0 mt-1">
+                        {i + 1}/{steps.length}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Selected detail */}
         <AnimatePresence>
