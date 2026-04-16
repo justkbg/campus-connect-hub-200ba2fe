@@ -120,16 +120,50 @@ export default function MapPage() {
             <span className="text-[11px] text-muted-foreground">UPSA · Madina</span>
           </div>
 
-          {/* Search */}
-          <div className="flex items-center gap-3 bg-muted rounded-xl px-4 py-3 mb-3">
-            <Search className="w-4 h-4 text-muted-foreground" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search lecture halls, services, offices…"
-              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
-            />
+          {/* Search + Locate */}
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex-1 flex items-center gap-3 bg-muted rounded-xl px-4 py-3">
+              <Search className="w-4 h-4 text-muted-foreground" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search lecture halls, services, offices…"
+                className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
+              />
+            </div>
+            <button
+              onClick={requestLocation}
+              aria-label="Use my location"
+              className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${
+                geoState === "granted"
+                  ? "gradient-primary text-primary-foreground shadow-premium"
+                  : "bg-muted text-foreground hover:bg-muted/70"
+              }`}
+            >
+              {geoState === "prompting" ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <LocateFixed className="w-4 h-4" />
+              )}
+            </button>
           </div>
+
+          {/* Geo state hint */}
+          {geoState === "denied" && (
+            <p className="text-[11px] text-muted-foreground mb-2">
+              Location permission denied — showing simulated campus position.
+            </p>
+          )}
+          {geoState === "off-campus" && (
+            <p className="text-[11px] text-muted-foreground mb-2">
+              You're not on campus right now — showing simulated UPSA position for demo.
+            </p>
+          )}
+          {geoState === "unavailable" && (
+            <p className="text-[11px] text-muted-foreground mb-2">
+              Live location unavailable on this device.
+            </p>
+          )}
 
           {/* Categories */}
           <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-5 px-5">
@@ -158,8 +192,9 @@ export default function MapPage() {
               setSelected(b);
               setRouting(false);
             }}
-            userPosition={USER_POSITION}
-            routeFrom={USER_POSITION}
+            userPosition={userPos}
+            userAccuracy={geoState === "granted" ? accuracy : null}
+            routeFrom={userPos}
             routeTo={routeTo}
           />
         </div>
