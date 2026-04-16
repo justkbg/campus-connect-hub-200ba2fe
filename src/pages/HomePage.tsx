@@ -56,20 +56,36 @@ export default function HomePage() {
           </div>
 
           {/* Next class card */}
-          {nextClass && (
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-              className="bg-primary-foreground/15 backdrop-blur-xl rounded-2xl p-4 border border-primary-foreground/10">
-              <div className="flex items-center gap-2 mb-2">
-                <Clock className="w-3.5 h-3.5 text-primary-foreground/70" />
-                <span className="text-[11px] font-medium text-primary-foreground/70">
-                  {nextClass.status === "ongoing" ? "Happening now" : "Up next"}
-                </span>
-                <StatusBadge status={nextClass.status} />
-              </div>
-              <p className="text-sm font-semibold text-primary-foreground">{nextClass.course} — {nextClass.title}</p>
-              <p className="text-xs text-primary-foreground/60 mt-1">{nextClass.time} • {nextClass.venue} • {nextClass.lecturer}</p>
-            </motion.div>
-          )}
+          {nextClass && (() => {
+            const venueLower = nextClass.venue.toLowerCase();
+            const venueBuilding = upsaBuildings.find((b) =>
+              b.name.toLowerCase().includes(venueLower) ||
+              venueLower.includes(b.name.toLowerCase().split(" ")[0])
+            );
+            return (
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                className="bg-primary-foreground/15 backdrop-blur-xl rounded-2xl p-4 border border-primary-foreground/10">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-3.5 h-3.5 text-primary-foreground/70" />
+                  <span className="text-[11px] font-medium text-primary-foreground/70">
+                    {nextClass.status === "ongoing" ? "Happening now" : "Up next"}
+                  </span>
+                  <StatusBadge status={nextClass.status} />
+                </div>
+                <p className="text-sm font-semibold text-primary-foreground">{nextClass.course} — {nextClass.title}</p>
+                <p className="text-xs text-primary-foreground/60 mt-1">{nextClass.time} • {nextClass.venue} • {nextClass.lecturer}</p>
+                {nextClass.status !== "completed" && (
+                  <Link
+                    to={venueBuilding ? `/map?to=${venueBuilding.id}` : "/map"}
+                    className="mt-3 w-full inline-flex items-center justify-center gap-2 bg-primary-foreground text-primary rounded-xl py-2.5 text-xs font-semibold shadow-premium active:scale-[0.98] transition-transform"
+                  >
+                    <Navigation className="w-3.5 h-3.5" />
+                    Take me to my next class
+                  </Link>
+                )}
+              </motion.div>
+            );
+          })()}
         </div>
 
         {/* Quick Actions */}
