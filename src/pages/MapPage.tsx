@@ -52,6 +52,7 @@ function walkingTime(from: [number, number], to: [number, number]) {
 type GeoState = "idle" | "prompting" | "granted" | "denied" | "unavailable" | "off-campus";
 
 export default function MapPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [cat, setCat] = useState("All");
   const [selected, setSelected] = useState<CampusBuilding | null>(null);
@@ -59,9 +60,43 @@ export default function MapPage() {
   const [userPos, setUserPos] = useState<[number, number]>(FALLBACK_POSITION);
   const [accuracy, setAccuracy] = useState<number | null>(null);
   const [geoState, setGeoState] = useState<GeoState>("idle");
+  const [steps, setSteps] = useState<RouteStep[]>([]);
+  const [routeTotals, setRouteTotals] = useState<{ distance: number; duration: number } | null>(null);
   const watchIdRef = useRef<number | null>(null);
 
   const nextClass = todaySchedule.find((c) => c.status === "upcoming");
+
+  const findNearestService = (chip: ServiceChip) => {
+    const named = upsaBuildings.filter((b) => chip.match(b.name));
+    const pool = named.length ? named : upsaBuildings.filter((b) => b.category === "Services");
+    if (!pool.length) return null;
+    return pool
+      .map((b) => ({ b, d: haversineMeters(userPos, b.position) }))
+      .sort((a, z) => a.d - z.d)[0].b;
+  };
+
+  const handleServiceChip = (chip: ServiceChip) => {
+    const target = findNearestService(chip);
+    if (target) {
+      setSelected(target);
+      setRouting(true);
+    }
+  };
+
+  // Deep-link: ?to=<buildingId> auto-selects and routes
+  useEffect(() => {
+    const toId = searchParams.get("to");
+    if (!toId) return;
+    const target = upsaBuildings.find((b) => String(b.id) === toId);
+    if (target) {
+      setSelected(target);
+      setRouting(true);
+      const next = new URLSearchParams(searchParams);
+      next.delete("to");
+      setSearchParams(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const requestLocation = () => {
     if (!("geolocation" in navigator)) {
