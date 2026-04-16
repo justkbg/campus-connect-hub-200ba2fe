@@ -1,12 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search, MapPin, Navigation, Clock, Footprints, X, LocateFixed, Loader2 } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { Search, MapPin, Navigation, Clock, Footprints, X, LocateFixed, Loader2, Droplet, Printer, Landmark, Coffee, ArrowUpRight, ArrowRight, ArrowLeft, CornerUpRight, CornerUpLeft, Flag, Route } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
-import CampusMap, { upsaBuildings, UPSA_CENTER, CampusBuilding } from "@/components/CampusMap";
+import CampusMap, { upsaBuildings, UPSA_CENTER, CampusBuilding, RouteStep } from "@/components/CampusMap";
 import { todaySchedule } from "@/data/mockData";
 
 const categories = ["All", "Academic", "Services", "Administrative", "Social"];
+
+// Quick-service chips — match by keywords against building name
+type ServiceChip = { key: string; label: string; icon: typeof Droplet; match: (name: string) => boolean };
+const serviceChips: ServiceChip[] = [
+  { key: "washroom", label: "Washroom", icon: Droplet, match: (n) => /washroom|toilet|restroom/i.test(n) },
+  { key: "print", label: "Print", icon: Printer, match: (n) => /print/i.test(n) },
+  { key: "atm", label: "ATM", icon: Landmark, match: (n) => /atm|bank/i.test(n) },
+  { key: "cafe", label: "Cafeteria", icon: Coffee, match: (n) => /cafe|caf[eé]teria|food/i.test(n) },
+];
 
 // Fallback simulated position (used if geolocation denied/unavailable)
 const FALLBACK_POSITION: [number, number] = [5.65080, -0.17460];
