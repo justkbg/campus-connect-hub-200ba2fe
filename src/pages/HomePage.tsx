@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { Bell, Search, MapPin, MessageSquare, Calendar, Briefcase, ChevronRight, Clock, AlertTriangle, Megaphone, BookOpen, ShoppingBag, Link2, FolderOpen } from "lucide-react";
+import { Bell, Search, MapPin, MessageSquare, Calendar, Briefcase, ChevronRight, Clock, AlertTriangle, Megaphone, BookOpen, ShoppingBag, Link2, FolderOpen, Navigation } from "lucide-react";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
 import StatusBadge from "@/components/StatusBadge";
 import { currentUser, announcements, events, todaySchedule, notifications } from "@/data/mockData";
+import { upsaBuildings } from "@/components/CampusMap";
 import { Link } from "react-router-dom";
 
 const quickActions = [
