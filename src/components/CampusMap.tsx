@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Polygon, Polyline, useMap, CircleMarker } from "react-leaflet";
+import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup, Polygon, Polyline, useMap, CircleMarker, Circle } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -142,13 +142,25 @@ function FlyTo({ position }: { position: [number, number] | null }) {
   return null;
 }
 
+function FitRoute({ path }: { path: [number, number][] | null }) {
+  const map = useMap();
+  useEffect(() => {
+    if (path && path.length > 1) {
+      const bounds = L.latLngBounds(path.map((p) => L.latLng(p[0], p[1])));
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 18, animate: true });
+    }
+  }, [path, map]);
+  return null;
+}
+
 type Props = {
   buildings?: CampusBuilding[];
   selectedId?: number | null;
   onSelect?: (b: CampusBuilding) => void;
   routeFrom?: [number, number];
   routeTo?: [number, number] | null;
-  userPosition?: [number, number];
+  userPosition?: [number, number] | null;
+  userAccuracy?: number | null;
 };
 
 export default function CampusMap({
@@ -158,8 +170,40 @@ export default function CampusMap({
   routeFrom,
   routeTo,
   userPosition,
+  userAccuracy,
 }: Props) {
   const selected = buildings.find((b) => b.id === selectedId) ?? null;
+  const [routePath, setRoutePath] = useState<[number, number][] | null>(null);
+  const [routing, setRouting] = useState(false);
+
+  // Fetch turn-by-turn route from public OSRM demo server
+  useEffect(() => {
+    let cancelled = false;
+    if (!routeFrom || !routeTo) {
+      setRoutePath(null);
+      return;
+    }
+    setRouting(true);
+    const url = `https://router.project-osrm.org/route/v1/foot/${routeFrom[1]},${routeFrom[0]};${routeTo[1]},${routeTo[0]}?overview=full&geometries=geojson`;
+    fetch(url)
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        const coords = data?.routes?.[0]?.geometry?.coordinates;
+        if (Array.isArray(coords)) {
+          setRoutePath(coords.map((c: [number, number]) => [c[1], c[0]]));
+        } else {
+          setRoutePath([routeFrom, routeTo]);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setRoutePath([routeFrom, routeTo]);
+      })
+      .finally(() => !cancelled && setRouting(false));
+    return () => {
+      cancelled = true;
+    };
+  }, [routeFrom?.[0], routeFrom?.[1], routeTo?.[0], routeTo?.[1]]);
 
   return (
     <MapContainer
@@ -208,34 +252,66 @@ export default function CampusMap({
         </Marker>
       ))}
 
-      {/* User position */}
+      {/* User position with accuracy halo */}
       {userPosition && (
-        <CircleMarker
-          center={userPosition}
-          radius={7}
-          pathOptions={{
-            color: "hsl(217 91% 53%)",
-            fillColor: "hsl(217 91% 53%)",
-            fillOpacity: 1,
-            weight: 3,
-          }}
-        />
+        <>
+          {userAccuracy && userAccuracy > 0 && (
+            <Circle
+              center={userPosition}
+              radius={Math.min(userAccuracy, 80)}
+              pathOptions={{
+                color: "hsl(217 91% 53%)",
+                fillColor: "hsl(217 91% 53%)",
+                fillOpacity: 0.12,
+                weight: 1,
+                opacity: 0.4,
+              }}
+            />
+          )}
+          <CircleMarker
+            center={userPosition}
+            radius={7}
+            pathOptions={{
+              color: "#fff",
+              fillColor: "hsl(217 91% 53%)",
+              fillOpacity: 1,
+              weight: 3,
+            }}
+          />
+        </>
       )}
 
-      {/* Route */}
-      {routeFrom && routeTo && (
-        <Polyline
-          positions={[routeFrom, routeTo]}
-          pathOptions={{
-            color: "hsl(217 91% 53%)",
-            weight: 4,
-            opacity: 0.85,
-            dashArray: "8 8",
-          }}
-        />
+      {/* Route — turn-by-turn polyline */}
+      {routeFrom && routeTo && routePath && (
+        <>
+          {/* Outer halo */}
+          <Polyline
+            positions={routePath}
+            pathOptions={{
+              color: "#fff",
+              weight: 8,
+              opacity: 0.9,
+              lineCap: "round",
+              lineJoin: "round",
+            }}
+          />
+          {/* Inner route */}
+          <Polyline
+            positions={routePath}
+            pathOptions={{
+              color: "hsl(217 91% 53%)",
+              weight: 5,
+              opacity: 0.95,
+              lineCap: "round",
+              lineJoin: "round",
+              dashArray: routing ? "6 8" : undefined,
+            }}
+          />
+        </>
       )}
 
-      <FlyTo position={selected?.position ?? null} />
+      {routePath && <FitRoute path={routePath} />}
+      {!routePath && <FlyTo position={selected?.position ?? null} />}
     </MapContainer>
   );
 }

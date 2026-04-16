@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Search, MapPin, Navigation, Clock, Footprints, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Search, MapPin, Navigation, Clock, Footprints, X, LocateFixed, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
@@ -8,8 +8,18 @@ import { todaySchedule } from "@/data/mockData";
 
 const categories = ["All", "Academic", "Services", "Administrative", "Social"];
 
-// Approximate user position on campus (near Student Center)
-const USER_POSITION: [number, number] = [5.65080, -0.17460];
+// Fallback simulated position (used if geolocation denied/unavailable)
+const FALLBACK_POSITION: [number, number] = [5.65080, -0.17460];
+
+// Bounding box around UPSA campus — clamp far-off real positions for demo realism
+const CAMPUS_BBOX = {
+  minLat: 5.6460, maxLat: 5.6545,
+  minLng: -0.1820, maxLng: -0.1700,
+};
+function withinCampus(p: [number, number]) {
+  return p[0] >= CAMPUS_BBOX.minLat && p[0] <= CAMPUS_BBOX.maxLat
+      && p[1] >= CAMPUS_BBOX.minLng && p[1] <= CAMPUS_BBOX.maxLng;
+}
 
 function haversineMeters(a: [number, number], b: [number, number]) {
   const R = 6371000;
@@ -29,13 +39,56 @@ function walkingTime(from: [number, number], to: [number, number]) {
   return { meters: Math.round(meters), minutes };
 }
 
+type GeoState = "idle" | "prompting" | "granted" | "denied" | "unavailable" | "off-campus";
+
 export default function MapPage() {
   const [search, setSearch] = useState("");
   const [cat, setCat] = useState("All");
   const [selected, setSelected] = useState<CampusBuilding | null>(null);
   const [routing, setRouting] = useState(false);
+  const [userPos, setUserPos] = useState<[number, number]>(FALLBACK_POSITION);
+  const [accuracy, setAccuracy] = useState<number | null>(null);
+  const [geoState, setGeoState] = useState<GeoState>("idle");
+  const watchIdRef = useRef<number | null>(null);
 
   const nextClass = todaySchedule.find((c) => c.status === "upcoming");
+
+  const requestLocation = () => {
+    if (!("geolocation" in navigator)) {
+      setGeoState("unavailable");
+      return;
+    }
+    setGeoState("prompting");
+    // Clear any prior watch
+    if (watchIdRef.current !== null) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+    }
+    watchIdRef.current = navigator.geolocation.watchPosition(
+      (pos) => {
+        const p: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+        setAccuracy(pos.coords.accuracy ?? null);
+        if (withinCampus(p)) {
+          setUserPos(p);
+          setGeoState("granted");
+        } else {
+          // Off-campus — keep showing campus fallback so the demo stays meaningful
+          setUserPos(FALLBACK_POSITION);
+          setGeoState("off-campus");
+        }
+      },
+      (err) => {
+        if (err.code === err.PERMISSION_DENIED) setGeoState("denied");
+        else setGeoState("unavailable");
+      },
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+    );
+  };
+
+  useEffect(() => {
+    return () => {
+      if (watchIdRef.current !== null) navigator.geolocation.clearWatch(watchIdRef.current);
+    };
+  }, []);
 
   const filtered = useMemo(
     () =>
@@ -50,13 +103,13 @@ export default function MapPage() {
   const enriched = useMemo(
     () =>
       filtered
-        .map((l) => ({ ...l, ...walkingTime(USER_POSITION, l.position) }))
+        .map((l) => ({ ...l, ...walkingTime(userPos, l.position) }))
         .sort((a, b) => a.meters - b.meters),
-    [filtered]
+    [filtered, userPos]
   );
 
   const routeTo = routing && selected ? selected.position : null;
-  const selectedWalk = selected ? walkingTime(USER_POSITION, selected.position) : null;
+  const selectedWalk = selected ? walkingTime(userPos, selected.position) : null;
 
   return (
     <PageShell>
@@ -67,16 +120,50 @@ export default function MapPage() {
             <span className="text-[11px] text-muted-foreground">UPSA · Madina</span>
           </div>
 
-          {/* Search */}
-          <div className="flex items-center gap-3 bg-muted rounded-xl px-4 py-3 mb-3">
-            <Search className="w-4 h-4 text-muted-foreground" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search lecture halls, services, offices…"
-              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
-            />
+          {/* Search + Locate */}
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex-1 flex items-center gap-3 bg-muted rounded-xl px-4 py-3">
+              <Search className="w-4 h-4 text-muted-foreground" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search lecture halls, services, offices…"
+                className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
+              />
+            </div>
+            <button
+              onClick={requestLocation}
+              aria-label="Use my location"
+              className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${
+                geoState === "granted"
+                  ? "gradient-primary text-primary-foreground shadow-premium"
+                  : "bg-muted text-foreground hover:bg-muted/70"
+              }`}
+            >
+              {geoState === "prompting" ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <LocateFixed className="w-4 h-4" />
+              )}
+            </button>
           </div>
+
+          {/* Geo state hint */}
+          {geoState === "denied" && (
+            <p className="text-[11px] text-muted-foreground mb-2">
+              Location permission denied — showing simulated campus position.
+            </p>
+          )}
+          {geoState === "off-campus" && (
+            <p className="text-[11px] text-muted-foreground mb-2">
+              You're not on campus right now — showing simulated UPSA position for demo.
+            </p>
+          )}
+          {geoState === "unavailable" && (
+            <p className="text-[11px] text-muted-foreground mb-2">
+              Live location unavailable on this device.
+            </p>
+          )}
 
           {/* Categories */}
           <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-5 px-5">
@@ -105,8 +192,9 @@ export default function MapPage() {
               setSelected(b);
               setRouting(false);
             }}
-            userPosition={USER_POSITION}
-            routeFrom={USER_POSITION}
+            userPosition={userPos}
+            userAccuracy={geoState === "granted" ? accuracy : null}
+            routeFrom={userPos}
             routeTo={routeTo}
           />
         </div>
