@@ -110,24 +110,36 @@ export default function HomePage() {
             return (
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
                 className="bg-primary-foreground/15 backdrop-blur-xl rounded-2xl p-4 border border-primary-foreground/10">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
                   <Clock className="w-3.5 h-3.5 text-primary-foreground/70" />
                   <span className="text-[11px] font-medium text-primary-foreground/70">
                     {nextClass.status === "ongoing" ? "Happening now" : "Up next"}
                   </span>
                   <StatusBadge status={nextClass.status} />
+                  {eta && (
+                    <span
+                      className={`ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                        eta.tone === "now"
+                          ? "bg-success/20 text-success-foreground border-success/40"
+                          : eta.tone === "soon"
+                          ? "bg-warning/25 text-primary-foreground border-warning/50 animate-pulse"
+                          : "bg-primary-foreground/15 text-primary-foreground border-primary-foreground/20"
+                      }`}
+                    >
+                      <Timer className="w-3 h-3" />
+                      {eta.label}
+                    </span>
+                  )}
                 </div>
                 <p className="text-sm font-semibold text-primary-foreground">{nextClass.course} — {nextClass.title}</p>
                 <p className="text-xs text-primary-foreground/60 mt-1">{nextClass.time} • {nextClass.venue} • {nextClass.lecturer}</p>
-                {nextClass.status !== "completed" && (
-                  <Link
-                    to={venueBuilding ? `/map?to=${venueBuilding.id}` : "/map"}
-                    className="mt-3 w-full inline-flex items-center justify-center gap-2 bg-primary-foreground text-primary rounded-xl py-2.5 text-xs font-semibold shadow-premium active:scale-[0.98] transition-transform"
-                  >
-                    <Navigation className="w-3.5 h-3.5" />
-                    Take me to my next class
-                  </Link>
-                )}
+                <Link
+                  to={venueBuilding ? `/map?to=${venueBuilding.id}` : "/map"}
+                  className="mt-3 w-full inline-flex items-center justify-center gap-2 bg-primary-foreground text-primary rounded-xl py-2.5 text-xs font-semibold shadow-premium active:scale-[0.98] transition-transform"
+                >
+                  <Navigation className="w-3.5 h-3.5" />
+                  Take me to my next class
+                </Link>
               </motion.div>
             );
           })()}
