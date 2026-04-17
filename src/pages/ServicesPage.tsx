@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Search, Navigation, Printer, Building2, Monitor, BookOpen, Users, Bath, Wifi, CreditCard, PenTool } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, Navigation, Printer, Building2, Monitor, BookOpen, Users, Bath, Wifi, CreditCard, PenTool, Ticket, AlertOctagon, Building, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
@@ -9,6 +10,12 @@ import { services } from "@/data/mockData";
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Printer, Building2, Monitor, BookOpen, Users, Bath, Wifi, CreditCard, PenTool,
 };
+
+const featured = [
+  { to: "/queues", icon: Ticket, title: "Smart Queues", subtitle: "Skip the line — remote tickets", color: "from-primary to-accent" },
+  { to: "/spaces", icon: Building, title: "Find a Space", subtitle: "Live classroom & study availability", color: "from-accent to-primary" },
+  { to: "/incidents", icon: AlertOctagon, title: "Report an Issue", subtitle: "Photo + location + status tracking", color: "from-destructive to-warning" },
+];
 
 const cats = ["All", "Offices", "Printing", "Academic", "WiFi Zones", "Services", "Washrooms"];
 
