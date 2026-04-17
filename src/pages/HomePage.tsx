@@ -13,10 +13,10 @@ const quickActions = [
   { icon: MapPin, label: "Map", path: "/map", color: "bg-accent/10 text-accent" },
   { icon: Calendar, label: "Timetable", path: "/schedule", color: "bg-success/10 text-success" },
   { icon: Briefcase, label: "Services", path: "/services", color: "bg-warning/10 text-warning" },
-  { icon: FolderOpen, label: "Resources", path: "/resources", color: "bg-primary/10 text-primary" },
-  { icon: ShoppingBag, label: "Market", path: "/marketplace", color: "bg-accent/10 text-accent" },
-  { icon: Link2, label: "Links", path: "/resources", color: "bg-success/10 text-success" },
-  { icon: BookOpen, label: "Notes", path: "/resources", color: "bg-warning/10 text-warning" },
+  { icon: Ticket, label: "Queues", path: "/queues", color: "bg-primary/10 text-primary" },
+  { icon: Building, label: "Spaces", path: "/spaces", color: "bg-accent/10 text-accent" },
+  { icon: AlertOctagon, label: "Report", path: "/incidents", color: "bg-destructive/10 text-destructive" },
+  { icon: FolderOpen, label: "Resources", path: "/resources", color: "bg-success/10 text-success" },
 ];
 
 const announcementIcons = { urgent: AlertTriangle, important: Megaphone, info: Bell };
