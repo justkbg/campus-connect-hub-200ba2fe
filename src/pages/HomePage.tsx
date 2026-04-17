@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Bell, Search, MapPin, MessageSquare, Calendar, Briefcase, ChevronRight, Clock, AlertTriangle, Megaphone, BookOpen, ShoppingBag, Link2, FolderOpen, Navigation } from "lucide-react";
+import { Bell, Search, MapPin, MessageSquare, Calendar, Briefcase, ChevronRight, Clock, AlertTriangle, Megaphone, BookOpen, ShoppingBag, Link2, FolderOpen, Navigation, Timer } from "lucide-react";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
 import StatusBadge from "@/components/StatusBadge";
@@ -25,10 +26,54 @@ const fadeUp = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transi
 
 const unreadCount = notifications.filter(n => !n.read).length;
 
+// Parse "8:00 AM – 10:00 AM" -> Date today for the start time
+function parseStartTimeToday(timeRange: string): Date | null {
+  const start = timeRange.split(/[–-]/)[0]?.trim();
+  if (!start) return null;
+  const m = start.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!m) return null;
+  let h = parseInt(m[1], 10);
+  const min = parseInt(m[2], 10);
+  const mer = m[3].toUpperCase();
+  if (mer === "PM" && h !== 12) h += 12;
+  if (mer === "AM" && h === 12) h = 0;
+  const d = new Date();
+  d.setHours(h, min, 0, 0);
+  return d;
+}
+
+function formatEta(ms: number): { label: string; tone: "soon" | "now" | "later" } {
+  if (ms <= 0) return { label: "Happening now", tone: "now" };
+  const totalMin = Math.floor(ms / 60000);
+  if (totalMin < 1) return { label: "Starts in <1 min", tone: "soon" };
+  if (totalMin < 60) return { label: `Starts in ${totalMin} min`, tone: totalMin <= 15 ? "soon" : "later" };
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  return { label: `Starts in ${h}h ${m}m`, tone: "later" };
+}
+
 export default function HomePage() {
   const nextClass = todaySchedule.find((c) => c.status === "upcoming" || c.status === "ongoing");
   const now = new Date();
   const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
+
+  // Live ETA tick
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 30000); // update every 30s
+    return () => clearInterval(id);
+  }, []);
+
+  const eta = (() => {
+    if (!nextClass) return null;
+    if (nextClass.status === "ongoing") return { label: "Happening now", tone: "now" as const };
+    const start = parseStartTimeToday(nextClass.time);
+    if (!start) return null;
+    return formatEta(start.getTime() - Date.now());
+  })();
+  // reference tick so the linter keeps it in deps
+  void tick;
+
 
   return (
     <PageShell>
