@@ -17,6 +17,9 @@ import MarketplacePage from "./pages/MarketplacePage";
 import ResourcesPage from "./pages/ResourcesPage";
 import LecturerPortalPage from "./pages/LecturerPortalPage";
 import CourseRepPortalPage from "./pages/CourseRepPortalPage";
+import QueuePage from "./pages/QueuePage";
+import IncidentsPage from "./pages/IncidentsPage";
+import SpacesPage from "./pages/SpacesPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +45,9 @@ const App = () => (
           <Route path="/resources" element={<ResourcesPage />} />
           <Route path="/lecturer" element={<LecturerPortalPage />} />
           <Route path="/course-rep" element={<CourseRepPortalPage />} />
+          <Route path="/queues" element={<QueuePage />} />
+          <Route path="/incidents" element={<IncidentsPage />} />
+          <Route path="/spaces" element={<SpacesPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
