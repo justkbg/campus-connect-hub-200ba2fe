@@ -17,6 +17,9 @@ import MarketplacePage from "./pages/MarketplacePage";
 import ResourcesPage from "./pages/ResourcesPage";
 import LecturerPortalPage from "./pages/LecturerPortalPage";
 import CourseRepPortalPage from "./pages/CourseRepPortalPage";
+import QueuePage from "./pages/QueuePage";
+import IncidentsPage from "./pages/IncidentsPage";
+import SpacesPage from "./pages/SpacesPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
