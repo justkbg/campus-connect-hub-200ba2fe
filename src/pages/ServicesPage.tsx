@@ -54,8 +54,39 @@ export default function ServicesPage() {
           </div>
         </div>
 
+        {/* Featured smart services */}
+        <div className="px-5 mb-4 space-y-2">
+          {featured.map((f, i) => {
+            const Icon = f.icon;
+            return (
+              <motion.div
+                key={f.to}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.04 }}
+              >
+                <Link
+                  to={f.to}
+                  className={`block rounded-2xl p-4 shadow-premium bg-gradient-to-br ${f.color} text-primary-foreground active:scale-[0.99] transition-transform`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-xl bg-primary-foreground/20 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold">{f.title}</p>
+                      <p className="text-[11px] text-primary-foreground/80">{f.subtitle}</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-primary-foreground/80" />
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
+        </div>
+
         <div className="px-5 space-y-2 mb-4">
-          {filtered.map((s, i) => {
+
             const Icon = iconMap[s.icon] || Building2;
             return (
               <motion.div key={s.id}
