@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search, MapPin, Navigation, Clock, Footprints, X, LocateFixed, Loader2, Droplet, Printer, Landmark, Coffee, ArrowUpRight, ArrowRight, ArrowLeft, CornerUpRight, CornerUpLeft, Flag, Route } from "lucide-react";
+import { Search, MapPin, Navigation, Clock, Footprints, X, LocateFixed, Loader2, Droplet, Printer, Landmark, Coffee, ArrowUpRight, ArrowRight, ArrowLeft, CornerUpRight, CornerUpLeft, Flag, Route, Accessibility, Crosshair } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
