@@ -230,7 +230,7 @@ export default function MapPage() {
           </div>
         </div>
 
-        {/* Quick-service chips */}
+        {/* Quick-service chips + accessibility toggle */}
         <div className="px-5 mt-1 mb-3">
           <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-5 px-5">
             {serviceChips.map((chip) => {
@@ -246,6 +246,18 @@ export default function MapPage() {
                 </button>
               );
             })}
+            <button
+              onClick={() => setAccessibleMode((v) => !v)}
+              aria-pressed={accessibleMode}
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap flex-shrink-0 transition-all active:scale-95 ${
+                accessibleMode
+                  ? "gradient-primary text-primary-foreground shadow-premium"
+                  : "bg-card border border-border text-foreground shadow-card hover:border-primary/30"
+              }`}
+            >
+              <Accessibility className="w-3.5 h-3.5" />
+              {accessibleMode ? "Step-free on" : "Avoid stairs"}
+            </button>
           </div>
         </div>
 
@@ -262,11 +274,26 @@ export default function MapPage() {
             userAccuracy={geoState === "granted" ? accuracy : null}
             routeFrom={userPos}
             routeTo={routeTo}
+            accessibleMode={accessibleMode}
+            recenterSignal={recenterSignal}
             onRouteSteps={(s, totals) => {
               setSteps(s);
               setRouteTotals(totals);
             }}
           />
+          {/* Re-center on me floating button */}
+          <button
+            onClick={() => {
+              if (geoState !== "granted" && geoState !== "off-campus") {
+                requestLocation();
+              }
+              setRecenterSignal((n) => n + 1);
+            }}
+            aria-label="Re-center on my location"
+            className="absolute bottom-3 right-3 z-[400] w-11 h-11 rounded-full bg-card shadow-premium border border-border flex items-center justify-center active:scale-95 transition-transform hover:border-primary/40"
+          >
+            <Crosshair className={`w-4 h-4 ${geoState === "granted" ? "text-primary" : "text-muted-foreground"}`} />
+          </button>
         </div>
 
         {/* Turn-by-turn steps */}
