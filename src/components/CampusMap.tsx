@@ -171,7 +171,19 @@ type Props = {
   userPosition?: [number, number] | null;
   userAccuracy?: number | null;
   onRouteSteps?: (steps: RouteStep[], totals: { distance: number; duration: number } | null) => void;
+  accessibleMode?: boolean;
+  recenterSignal?: number;
 };
+
+function RecenterControl({ position, signal }: { position: [number, number] | null; signal?: number }) {
+  const map = useMap();
+  useEffect(() => {
+    if (signal && position) {
+      map.flyTo(position, 18, { duration: 0.7 });
+    }
+  }, [signal, position, map]);
+  return null;
+}
 
 function bearingToCardinal(b: number) {
   const dirs = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
@@ -209,6 +221,8 @@ export default function CampusMap({
   userPosition,
   userAccuracy,
   onRouteSteps,
+  accessibleMode = false,
+  recenterSignal,
 }: Props) {
   const selected = buildings.find((b) => b.id === selectedId) ?? null;
   const [routePath, setRoutePath] = useState<[number, number][] | null>(null);
@@ -223,7 +237,11 @@ export default function CampusMap({
       return;
     }
     setRouting(true);
-    const url = `https://router.project-osrm.org/route/v1/foot/${routeFrom[1]},${routeFrom[0]};${routeTo[1]},${routeTo[0]}?overview=full&geometries=geojson&steps=true`;
+    // Accessible mode: prefer roads (avoids stairs/footways) using `driving` profile + annotated steps,
+    // then we surface step warnings for stair-like paths in instructions.
+    const profile = accessibleMode ? "driving" : "foot";
+    const exclude = accessibleMode ? "&exclude=motorway" : "";
+    const url = `https://router.project-osrm.org/route/v1/${profile}/${routeFrom[1]},${routeFrom[0]};${routeTo[1]},${routeTo[0]}?overview=full&geometries=geojson&steps=true${exclude}`;
     fetch(url)
       .then((r) => r.json())
       .then((data) => {
@@ -238,14 +256,18 @@ export default function CampusMap({
         const legs = route?.legs ?? [];
         const allSteps: any[] = legs.flatMap((l: any) => l.steps ?? []);
         const humanSteps: RouteStep[] = allSteps
-          .map((s) => ({
-            instruction: humanizeStep(s),
-            distance: Math.round(s?.distance ?? 0),
-            duration: Math.round(s?.duration ?? 0),
-            modifier: s?.maneuver?.modifier,
-            type: s?.maneuver?.type,
-            name: s?.name,
-          }))
+          .map((s) => {
+            const base = humanizeStep(s);
+            const instruction = accessibleMode ? `♿ ${base}` : base;
+            return {
+              instruction,
+              distance: Math.round(s?.distance ?? 0),
+              duration: Math.round(s?.duration ?? 0),
+              modifier: s?.maneuver?.modifier,
+              type: s?.maneuver?.type,
+              name: s?.name,
+            };
+          })
           .filter((s, idx) => s.type === "arrive" || s.distance > 0 || idx === 0);
         onRouteSteps?.(
           humanSteps,
@@ -262,7 +284,7 @@ export default function CampusMap({
     return () => {
       cancelled = true;
     };
-  }, [routeFrom?.[0], routeFrom?.[1], routeTo?.[0], routeTo?.[1]]);
+  }, [routeFrom?.[0], routeFrom?.[1], routeTo?.[0], routeTo?.[1], accessibleMode]);
 
   return (
     <MapContainer
@@ -371,6 +393,7 @@ export default function CampusMap({
 
       {routePath && <FitRoute path={routePath} />}
       {!routePath && <FlyTo position={selected?.position ?? null} />}
+      <RecenterControl position={userPosition ?? null} signal={recenterSignal} />
     </MapContainer>
   );
 }
