@@ -86,7 +86,7 @@ export default function ServicesPage() {
         </div>
 
         <div className="px-5 space-y-2 mb-4">
-
+          {filtered.map((s, i) => {
             const Icon = iconMap[s.icon] || Building2;
             return (
               <motion.div key={s.id}
