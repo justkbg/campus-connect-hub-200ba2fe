@@ -62,6 +62,8 @@ export default function MapPage() {
   const [geoState, setGeoState] = useState<GeoState>("idle");
   const [steps, setSteps] = useState<RouteStep[]>([]);
   const [routeTotals, setRouteTotals] = useState<{ distance: number; duration: number } | null>(null);
+  const [accessibleMode, setAccessibleMode] = useState(false);
+  const [recenterSignal, setRecenterSignal] = useState(0);
   const watchIdRef = useRef<number | null>(null);
 
   const nextClass = todaySchedule.find((c) => c.status === "upcoming");
