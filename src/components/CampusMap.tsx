@@ -237,7 +237,11 @@ export default function CampusMap({
       return;
     }
     setRouting(true);
-    const url = `https://router.project-osrm.org/route/v1/foot/${routeFrom[1]},${routeFrom[0]};${routeTo[1]},${routeTo[0]}?overview=full&geometries=geojson&steps=true`;
+    // Accessible mode: prefer roads (avoids stairs/footways) using `driving` profile + annotated steps,
+    // then we surface step warnings for stair-like paths in instructions.
+    const profile = accessibleMode ? "driving" : "foot";
+    const exclude = accessibleMode ? "&exclude=motorway" : "";
+    const url = `https://router.project-osrm.org/route/v1/${profile}/${routeFrom[1]},${routeFrom[0]};${routeTo[1]},${routeTo[0]}?overview=full&geometries=geojson&steps=true${exclude}`;
     fetch(url)
       .then((r) => r.json())
       .then((data) => {
@@ -252,14 +256,18 @@ export default function CampusMap({
         const legs = route?.legs ?? [];
         const allSteps: any[] = legs.flatMap((l: any) => l.steps ?? []);
         const humanSteps: RouteStep[] = allSteps
-          .map((s) => ({
-            instruction: humanizeStep(s),
-            distance: Math.round(s?.distance ?? 0),
-            duration: Math.round(s?.duration ?? 0),
-            modifier: s?.maneuver?.modifier,
-            type: s?.maneuver?.type,
-            name: s?.name,
-          }))
+          .map((s) => {
+            const base = humanizeStep(s);
+            const instruction = accessibleMode ? `♿ ${base}` : base;
+            return {
+              instruction,
+              distance: Math.round(s?.distance ?? 0),
+              duration: Math.round(s?.duration ?? 0),
+              modifier: s?.maneuver?.modifier,
+              type: s?.maneuver?.type,
+              name: s?.name,
+            };
+          })
           .filter((s, idx) => s.type === "arrive" || s.distance > 0 || idx === 0);
         onRouteSteps?.(
           humanSteps,
@@ -276,7 +284,7 @@ export default function CampusMap({
     return () => {
       cancelled = true;
     };
-  }, [routeFrom?.[0], routeFrom?.[1], routeTo?.[0], routeTo?.[1]]);
+  }, [routeFrom?.[0], routeFrom?.[1], routeTo?.[0], routeTo?.[1], accessibleMode]);
 
   return (
     <MapContainer
