@@ -151,3 +151,213 @@ export const botResponses: Record<string, string> = {
   "library opening hours": "📖 **Main Library Hours:**\n\n🕐 Monday – Friday: **7:00 AM – 8:00 PM**\n🕐 Saturday: **9:00 AM – 5:00 PM**\n🕐 Sunday: **Closed**\n\n💡 *Extended hours (7AM–10PM) during exam week.*",
   "wifi zones nearby": "📶 **WiFi Zones Near You:**\n\n1. **Library WiFi** – 2 min walk • Strong signal\n2. **Student Center** – 4 min walk • Good signal\n3. **ICT Lab** – 5 min walk • Strong signal\n\n💡 *Connect with your student ID credentials.*",
 };
+
+// ============= Digital Queue System =============
+export type QueueOffice = {
+  id: string;
+  name: string;
+  category: string;
+  icon: string;
+  buildingId: number;
+  hours: string;
+  counters: { id: string; label: string; serving: string; status: "active" | "paused" | "closed" }[];
+  nowServing: string;
+  averageWaitMin: number;
+  inQueue: number;
+  ticketPrefix: string;
+  nextNumber: number;
+  recentCalls: { number: string; counter: string; time: string }[];
+};
+
+export const queueOffices: QueueOffice[] = [
+  {
+    id: "registrar",
+    name: "Registrar's Office",
+    category: "Academic Records",
+    icon: "FileText",
+    buildingId: 5,
+    hours: "8:00 AM – 4:30 PM",
+    counters: [
+      { id: "R1", label: "Counter 1 · Transcripts", serving: "R-042", status: "active" },
+      { id: "R2", label: "Counter 2 · Verifications", serving: "R-040", status: "active" },
+      { id: "R3", label: "Counter 3 · Enrollment", serving: "R-038", status: "paused" },
+    ],
+    nowServing: "R-042",
+    averageWaitMin: 18,
+    inQueue: 14,
+    ticketPrefix: "R",
+    nextNumber: 56,
+    recentCalls: [
+      { number: "R-042", counter: "Counter 1", time: "just now" },
+      { number: "R-041", counter: "Counter 2", time: "2 min ago" },
+      { number: "R-040", counter: "Counter 2", time: "5 min ago" },
+      { number: "R-039", counter: "Counter 1", time: "9 min ago" },
+    ],
+  },
+  {
+    id: "bursary",
+    name: "Bursary",
+    category: "Fees & Payments",
+    icon: "CreditCard",
+    buildingId: 5,
+    hours: "8:30 AM – 4:00 PM",
+    counters: [
+      { id: "B1", label: "Counter 1 · Fees", serving: "B-128", status: "active" },
+      { id: "B2", label: "Counter 2 · Refunds", serving: "B-126", status: "active" },
+    ],
+    nowServing: "B-128",
+    averageWaitMin: 26,
+    inQueue: 21,
+    ticketPrefix: "B",
+    nextNumber: 150,
+    recentCalls: [
+      { number: "B-128", counter: "Counter 1", time: "just now" },
+      { number: "B-127", counter: "Counter 1", time: "4 min ago" },
+      { number: "B-126", counter: "Counter 2", time: "7 min ago" },
+    ],
+  },
+  {
+    id: "ict",
+    name: "ICT Help Desk",
+    category: "IT Support",
+    icon: "Monitor",
+    buildingId: 4,
+    hours: "8:00 AM – 6:00 PM",
+    counters: [
+      { id: "I1", label: "Counter 1 · Accounts", serving: "I-073", status: "active" },
+      { id: "I2", label: "Counter 2 · Devices", serving: "I-070", status: "active" },
+    ],
+    nowServing: "I-073",
+    averageWaitMin: 8,
+    inQueue: 5,
+    ticketPrefix: "I",
+    nextNumber: 79,
+    recentCalls: [
+      { number: "I-073", counter: "Counter 1", time: "just now" },
+      { number: "I-072", counter: "Counter 2", time: "3 min ago" },
+      { number: "I-071", counter: "Counter 1", time: "6 min ago" },
+    ],
+  },
+  {
+    id: "studentaffairs",
+    name: "Student Affairs",
+    category: "Welfare & ID",
+    icon: "Users",
+    buildingId: 8,
+    hours: "9:00 AM – 4:00 PM",
+    counters: [
+      { id: "S1", label: "Counter 1 · ID Cards", serving: "S-019", status: "active" },
+      { id: "S2", label: "Counter 2 · Welfare", serving: "S-017", status: "closed" },
+    ],
+    nowServing: "S-019",
+    averageWaitMin: 12,
+    inQueue: 8,
+    ticketPrefix: "S",
+    nextNumber: 28,
+    recentCalls: [
+      { number: "S-019", counter: "Counter 1", time: "1 min ago" },
+      { number: "S-018", counter: "Counter 1", time: "8 min ago" },
+    ],
+  },
+];
+
+// ============= Incident Reporting =============
+export type IncidentStatus = "submitted" | "in-progress" | "resolved";
+export type Incident = {
+  id: string;
+  category: string;
+  title: string;
+  description: string;
+  location: string;
+  buildingId?: number;
+  status: IncidentStatus;
+  reportedBy: string;
+  reportedAt: string;
+  updates: { status: IncidentStatus; note: string; time: string }[];
+  photo?: string;
+};
+
+export const incidentCategories = [
+  { key: "facilities", label: "Facilities", icon: "Wrench" },
+  { key: "security", label: "Security", icon: "Shield" },
+  { key: "wifi", label: "WiFi / IT", icon: "Wifi" },
+  { key: "cleaning", label: "Cleaning", icon: "Sparkles" },
+  { key: "electrical", label: "Electrical", icon: "Zap" },
+  { key: "plumbing", label: "Plumbing", icon: "Droplet" },
+  { key: "other", label: "Other", icon: "AlertCircle" },
+];
+
+export const incidents: Incident[] = [
+  {
+    id: "INC-2841",
+    category: "Electrical",
+    title: "Flickering lights in LT3",
+    description: "Front-row ceiling lights flicker during lectures.",
+    location: "Lecture Theatre 3 (LT3)",
+    buildingId: 2,
+    status: "in-progress",
+    reportedBy: "Kofi M.",
+    reportedAt: "Today · 10:14",
+    updates: [
+      { status: "submitted", note: "Report received", time: "10:14" },
+      { status: "in-progress", note: "Maintenance team dispatched", time: "11:02" },
+    ],
+  },
+  {
+    id: "INC-2837",
+    category: "Plumbing",
+    title: "Washroom tap leaking",
+    description: "Tap near Library entrance leaking continuously.",
+    location: "Main Library — Ground Floor",
+    buildingId: 3,
+    status: "resolved",
+    reportedBy: "Ama K.",
+    reportedAt: "Yesterday · 14:22",
+    updates: [
+      { status: "submitted", note: "Report received", time: "Yesterday 14:22" },
+      { status: "in-progress", note: "Plumber dispatched", time: "Yesterday 15:40" },
+      { status: "resolved", note: "Tap replaced", time: "Yesterday 17:05" },
+    ],
+  },
+  {
+    id: "INC-2830",
+    category: "WiFi / IT",
+    title: "Slow WiFi at Student Center",
+    description: "Speeds drop to <1 Mbps during peak hours.",
+    location: "Student Center",
+    buildingId: 8,
+    status: "submitted",
+    reportedBy: "Yaw B.",
+    reportedAt: "Today · 09:01",
+    updates: [
+      { status: "submitted", note: "Report received", time: "09:01" },
+    ],
+  },
+];
+
+// ============= Empty Space Finder =============
+export type SpaceType = "classroom" | "study" | "lab";
+export type CampusSpace = {
+  id: string;
+  name: string;
+  type: SpaceType;
+  buildingId: number;
+  capacity: number;
+  occupied: number;
+  nextBookedAt?: string;
+  amenities: string[];
+  reservable: boolean;
+  walkingMin: number;
+  noise: "quiet" | "moderate" | "lively";
+};
+
+export const campusSpaces: CampusSpace[] = [
+  { id: "sp-1", name: "LT1 — Main Hall", type: "classroom", buildingId: 1, capacity: 120, occupied: 0, nextBookedAt: "2:00 PM (ACC 102)", amenities: ["Projector", "AC"], reservable: false, walkingMin: 3, noise: "quiet" },
+  { id: "sp-2", name: "LT3 — North Wing", type: "classroom", buildingId: 2, capacity: 90, occupied: 12, nextBookedAt: "10:30 AM", amenities: ["Projector", "Whiteboard"], reservable: true, walkingMin: 4, noise: "quiet" },
+  { id: "sp-3", name: "Library — Silent Pods", type: "study", buildingId: 3, capacity: 24, occupied: 18, amenities: ["Power", "Wi-Fi", "Silent"], reservable: true, walkingMin: 2, noise: "quiet" },
+  { id: "sp-4", name: "Library — Group Room A", type: "study", buildingId: 3, capacity: 8, occupied: 0, nextBookedAt: "1:00 PM", amenities: ["Whiteboard", "Display"], reservable: true, walkingMin: 2, noise: "moderate" },
+  { id: "sp-5", name: "ICT Lab 2", type: "lab", buildingId: 4, capacity: 40, occupied: 6, amenities: ["Workstations", "Wi-Fi", "AC"], reservable: false, walkingMin: 5, noise: "moderate" },
+  { id: "sp-6", name: "ICT Lab 3", type: "lab", buildingId: 4, capacity: 40, occupied: 36, amenities: ["Workstations", "Wi-Fi"], reservable: false, walkingMin: 5, noise: "lively" },
+  { id: "sp-7", name: "Student Center — Lounge", type: "study", buildingId: 8, capacity: 30, occupied: 11, amenities: ["Wi-Fi", "Cafe nearby"], reservable: false, walkingMin: 4, noise: "lively" },
+  { id: "sp-8", name: "LT3 — Tutorial Room B", type: "classroom", buildingId: 2, capacity: 30, occupied: 2, nextBookedAt: "3:00 PM", amenities: ["Whiteboard"], reservable: true, walkingMin: 4, noise: "quiet" },
+];
