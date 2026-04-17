@@ -171,7 +171,19 @@ type Props = {
   userPosition?: [number, number] | null;
   userAccuracy?: number | null;
   onRouteSteps?: (steps: RouteStep[], totals: { distance: number; duration: number } | null) => void;
+  accessibleMode?: boolean;
+  recenterSignal?: number;
 };
+
+function RecenterControl({ position, signal }: { position: [number, number] | null; signal?: number }) {
+  const map = useMap();
+  useEffect(() => {
+    if (signal && position) {
+      map.flyTo(position, 18, { duration: 0.7 });
+    }
+  }, [signal, position, map]);
+  return null;
+}
 
 function bearingToCardinal(b: number) {
   const dirs = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
