@@ -393,6 +393,7 @@ export default function CampusMap({
 
       {routePath && <FitRoute path={routePath} />}
       {!routePath && <FlyTo position={selected?.position ?? null} />}
+      <RecenterControl position={userPosition ?? null} signal={recenterSignal} />
     </MapContainer>
   );
 }
