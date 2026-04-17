@@ -221,6 +221,8 @@ export default function CampusMap({
   userPosition,
   userAccuracy,
   onRouteSteps,
+  accessibleMode = false,
+  recenterSignal,
 }: Props) {
   const selected = buildings.find((b) => b.id === selectedId) ?? null;
   const [routePath, setRoutePath] = useState<[number, number][] | null>(null);
