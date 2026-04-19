@@ -9,7 +9,12 @@ import { useRole, ROLE_PROFILES, AppRole } from "@/contexts/RoleContext";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
+  const { role, setRole } = useRole();
   const [dark, setDark] = useState(false);
+
+  const switchRoles: AppRole[] = [
+    "student", "lecturer", "course_rep", "admin", "leadership", "visitor", "alumni", "parent", "vendor", "applicant",
+  ];
 
   const toggleDark = () => {
     setDark(!dark);
