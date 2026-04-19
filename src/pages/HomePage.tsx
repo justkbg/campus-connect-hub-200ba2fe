@@ -12,7 +12,7 @@ const quickActions = [
   { icon: MessageSquare, label: "Ask Bot", path: "/bot", color: "bg-primary/10 text-primary" },
   { icon: MapPin, label: "Map", path: "/map", color: "bg-accent/10 text-accent" },
   { icon: Calendar, label: "Timetable", path: "/schedule", color: "bg-success/10 text-success" },
-  { icon: Briefcase, label: "Services", path: "/services", color: "bg-warning/10 text-warning" },
+  { icon: Briefcase, label: "Opportunities", path: "/opportunities", color: "bg-warning/10 text-warning" },
   { icon: Ticket, label: "Queues", path: "/queues", color: "bg-primary/10 text-primary" },
   { icon: Building, label: "Spaces", path: "/spaces", color: "bg-accent/10 text-accent" },
   { icon: AlertOctagon, label: "Report", path: "/incidents", color: "bg-destructive/10 text-destructive" },
@@ -86,7 +86,7 @@ export default function HomePage() {
               <h1 className="text-xl font-bold text-primary-foreground mt-0.5">{greeting}, {currentUser.firstName} 👋</h1>
             </div>
             <div className="flex items-center gap-2">
-              <Link to="/notifications" className="relative w-10 h-10 rounded-full bg-primary-foreground/15 flex items-center justify-center">
+              <Link to="/inbox" className="relative w-10 h-10 rounded-full bg-primary-foreground/15 flex items-center justify-center">
                 <Bell className="w-4.5 h-4.5 text-primary-foreground" />
                 {unreadCount > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center border-2 border-primary">
@@ -172,7 +172,7 @@ export default function HomePage() {
         <motion.section variants={stagger} initial="hidden" animate="show" className="px-5 mt-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-foreground">Announcements</h2>
-            <Link to="/notifications" className="text-xs text-primary font-medium">See all</Link>
+            <Link to="/inbox" className="text-xs text-primary font-medium">See all</Link>
           </div>
           <div className="space-y-2.5">
             {announcements.slice(0, 3).map((a) => {
