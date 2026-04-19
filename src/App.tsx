@@ -20,6 +20,9 @@ import CourseRepPortalPage from "./pages/CourseRepPortalPage";
 import QueuePage from "./pages/QueuePage";
 import IncidentsPage from "./pages/IncidentsPage";
 import SpacesPage from "./pages/SpacesPage";
+import OpportunitiesPage from "./pages/OpportunitiesPage";
+import SmartInboxPage from "./pages/SmartInboxPage";
+import CommandCenterPage from "./pages/CommandCenterPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +51,9 @@ const App = () => (
           <Route path="/queues" element={<QueuePage />} />
           <Route path="/incidents" element={<IncidentsPage />} />
           <Route path="/spaces" element={<SpacesPage />} />
+          <Route path="/opportunities" element={<OpportunitiesPage />} />
+          <Route path="/inbox" element={<SmartInboxPage />} />
+          <Route path="/command-center" element={<CommandCenterPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
