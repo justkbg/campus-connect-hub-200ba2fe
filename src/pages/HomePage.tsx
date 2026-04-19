@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Bell, Search, MapPin, MessageSquare, Calendar, Briefcase, ChevronRight, Clock, AlertTriangle, Megaphone, BookOpen, ShoppingBag, Link2, FolderOpen, Navigation, Timer, Ticket, AlertOctagon, Building } from "lucide-react";
+import { Bell, Search, MapPin, MessageSquare, Calendar, Briefcase, ChevronRight, Clock, AlertTriangle, Megaphone, BookOpen, ShoppingBag, Link2, FolderOpen, Navigation, Timer, Ticket, AlertOctagon, Building, Compass } from "lucide-react";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
 import StatusBadge from "@/components/StatusBadge";
+import UnifiedSearch from "@/components/UnifiedSearch";
 import { currentUser, announcements, events, todaySchedule, notifications } from "@/data/mockData";
 import { upsaBuildings } from "@/components/CampusMap";
 import { Link } from "react-router-dom";
@@ -59,6 +60,7 @@ export default function HomePage() {
 
   // Live ETA tick
   const [tick, setTick] = useState(0);
+  const [searchOpen, setSearchOpen] = useState(false);
   useEffect(() => {
     const id = setInterval(() => setTick((t) => t + 1), 30000); // update every 30s
     return () => clearInterval(id);
@@ -160,12 +162,31 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Search */}
-        <div className="px-5 mt-5">
-          <div className="flex items-center gap-3 bg-muted rounded-xl px-4 py-3">
-            <Search className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Search campus, courses, events…</span>
+        {/* Smart Arrival nudge */}
+        <Link
+          to="/arrival"
+          className="mx-5 mt-4 flex items-center gap-3 bg-card rounded-2xl p-3.5 shadow-card border border-primary/10"
+        >
+          <div className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center flex-shrink-0">
+            <Compass className="w-4 h-4 text-primary-foreground" />
           </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] font-semibold text-foreground">Smart Arrival</p>
+            <p className="text-[11px] text-muted-foreground">Detect campus, Wi-Fi & QR check-in</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        </Link>
+
+        {/* Search */}
+        <div className="px-5 mt-4">
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="w-full flex items-center gap-3 bg-muted rounded-xl px-4 py-3 text-left"
+          >
+            <Search className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground flex-1">Search campus, courses, events…</span>
+            <kbd className="text-[10px] font-semibold text-muted-foreground border border-border rounded px-1.5 py-0.5 hidden sm:inline">⌘K</kbd>
+          </button>
         </div>
 
         {/* Announcements */}
@@ -251,6 +272,7 @@ export default function HomePage() {
         </section>
       </div>
       <BottomNav />
+      <UnifiedSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </PageShell>
   );
 }
