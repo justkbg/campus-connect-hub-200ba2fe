@@ -361,3 +361,216 @@ export const campusSpaces: CampusSpace[] = [
   { id: "sp-7", name: "Student Center — Lounge", type: "study", buildingId: 8, capacity: 30, occupied: 11, amenities: ["Wi-Fi", "Cafe nearby"], reservable: false, walkingMin: 4, noise: "lively" },
   { id: "sp-8", name: "LT3 — Tutorial Room B", type: "classroom", buildingId: 2, capacity: 30, occupied: 2, nextBookedAt: "3:00 PM", amenities: ["Whiteboard"], reservable: true, walkingMin: 4, noise: "quiet" },
 ];
+
+// ============= Opportunity Feed =============
+export type OpportunityType = "internship" | "scholarship" | "job" | "competition";
+export type Opportunity = {
+  id: string;
+  type: OpportunityType;
+  title: string;
+  organization: string;
+  location: string;
+  stipend?: string;
+  deadline: string; // ISO date
+  postedAt: string;
+  tags: string[];
+  description: string;
+  applyUrl: string;
+  logoColor: string; // tailwind gradient suffix
+  featured?: boolean;
+  eligibility?: string;
+};
+
+export const opportunities: Opportunity[] = [
+  {
+    id: "OPP-101",
+    type: "internship",
+    title: "Software Engineering Intern",
+    organization: "MTN Ghana",
+    location: "Accra · Hybrid",
+    stipend: "GH₵ 2,500/mo",
+    deadline: "2025-05-02",
+    postedAt: "2d ago",
+    tags: ["React", "Node.js", "3 months"],
+    description: "Join the Digital Products squad to ship customer-facing features for MyMTN.",
+    applyUrl: "https://careers.mtn.com",
+    logoColor: "from-warning to-primary",
+    featured: true,
+    eligibility: "Level 300+ · IT, CS",
+  },
+  {
+    id: "OPP-102",
+    type: "scholarship",
+    title: "MasterCard Foundation Scholars Program",
+    organization: "MasterCard Foundation",
+    location: "Full tuition + stipend",
+    deadline: "2025-05-15",
+    postedAt: "5h ago",
+    tags: ["Full ride", "Leadership"],
+    description: "Comprehensive scholarship for academically talented yet economically disadvantaged students.",
+    applyUrl: "https://mastercardfdn.org/scholars",
+    logoColor: "from-accent to-primary",
+    featured: true,
+    eligibility: "All faculties · GPA 3.5+",
+  },
+  {
+    id: "OPP-103",
+    type: "job",
+    title: "Junior Data Analyst",
+    organization: "Stanbic Bank Ghana",
+    location: "Accra · On-site",
+    stipend: "GH₵ 4,200/mo",
+    deadline: "2025-04-28",
+    postedAt: "1d ago",
+    tags: ["SQL", "Power BI", "Entry-level"],
+    description: "Support the Risk team with reporting dashboards and ad-hoc analysis.",
+    applyUrl: "https://stanbicbank.com.gh/careers",
+    logoColor: "from-success to-accent",
+    eligibility: "BSc graduates · Class of 2024/25",
+  },
+  {
+    id: "OPP-104",
+    type: "competition",
+    title: "Ghana FinTech Hackathon 2025",
+    organization: "Bank of Ghana × Ashesi",
+    location: "Accra · 48 hours",
+    stipend: "GH₵ 50,000 prize pool",
+    deadline: "2025-05-10",
+    postedAt: "3d ago",
+    tags: ["Team of 4", "FinTech", "Pitch"],
+    description: "Build the next generation of inclusive financial products. Mentorship + investor demo day.",
+    applyUrl: "https://fintechgh.org/hack",
+    logoColor: "from-primary to-accent",
+    featured: true,
+    eligibility: "Open to all students",
+  },
+  {
+    id: "OPP-105",
+    type: "internship",
+    title: "Marketing & Brand Intern",
+    organization: "Unilever Ghana",
+    location: "Tema · On-site",
+    stipend: "GH₵ 1,800/mo",
+    deadline: "2025-05-20",
+    postedAt: "6h ago",
+    tags: ["Brand", "Social", "6 weeks"],
+    description: "Support the Beauty & Personal Care brand team for the summer campaign window.",
+    applyUrl: "https://unilever.com.gh/careers",
+    logoColor: "from-accent to-warning",
+    eligibility: "Marketing, Communications",
+  },
+  {
+    id: "OPP-106",
+    type: "scholarship",
+    title: "GETFund Postgraduate Award",
+    organization: "Government of Ghana",
+    location: "Tuition support",
+    deadline: "2025-06-01",
+    postedAt: "1w ago",
+    tags: ["Postgraduate", "Need-based"],
+    description: "Tuition grant for outstanding final-year students proceeding to MSc/MPhil programs.",
+    applyUrl: "https://getfund.gov.gh",
+    logoColor: "from-success to-primary",
+    eligibility: "Final-year, GPA 3.0+",
+  },
+  {
+    id: "OPP-107",
+    type: "job",
+    title: "Customer Success Associate",
+    organization: "Hubtel",
+    location: "Accra · Hybrid",
+    stipend: "GH₵ 3,500/mo",
+    deadline: "2025-05-05",
+    postedAt: "12h ago",
+    tags: ["B2B SaaS", "Communication"],
+    description: "Own the post-sale relationship with Hubtel's mid-market merchants.",
+    applyUrl: "https://hubtel.com/careers",
+    logoColor: "from-primary to-success",
+    eligibility: "Any discipline",
+  },
+  {
+    id: "OPP-108",
+    type: "competition",
+    title: "UPSA Innovation Challenge",
+    organization: "UPSA Entrepreneurship Hub",
+    location: "On-campus",
+    stipend: "GH₵ 15,000 + incubation",
+    deadline: "2025-04-30",
+    postedAt: "4d ago",
+    tags: ["Solo or team", "Pitch deck"],
+    description: "Pitch your venture idea to the UPSA Innovation Board for incubation and seed support.",
+    applyUrl: "https://upsa.edu.gh/innovate",
+    logoColor: "from-warning to-destructive",
+    eligibility: "All UPSA students",
+  },
+];
+
+// ============= Smart Notification Engine =============
+export type NotifPriority = "critical" | "high" | "normal" | "low";
+export type NotifCategory = "class" | "deadline" | "queue" | "location" | "announcement" | "opportunity";
+export type SmartNotif = {
+  id: string;
+  category: NotifCategory;
+  priority: NotifPriority;
+  title: string;
+  body: string;
+  time: string;
+  read: boolean;
+  icon: string;
+  actionLabel?: string;
+  actionPath?: string;
+};
+
+export const smartNotifications: SmartNotif[] = [
+  { id: "n-1", category: "class", priority: "critical", title: "INFO 205 starts in 12 min", body: "LT1 · Prof. Kwame Asante. 4 min walk from your location.", time: "now", read: false, icon: "Timer", actionLabel: "Navigate", actionPath: "/map?to=1" },
+  { id: "n-2", category: "queue", priority: "high", title: "You're #3 in the Bursary queue", body: "Estimated wait: 6 min. Counter 1 currently serving B-128.", time: "2 min ago", read: false, icon: "Ticket", actionLabel: "View ticket", actionPath: "/queues" },
+  { id: "n-3", category: "deadline", priority: "high", title: "Course registration closes Friday", body: "5:00 PM hard deadline. 2 outstanding courses on your record.", time: "1h ago", read: false, icon: "AlertTriangle", actionLabel: "Open portal", actionPath: "/resources" },
+  { id: "n-4", category: "opportunity", priority: "high", title: "MTN Internship deadline in 13 days", body: "Matches your IT major and Level 300 status.", time: "3h ago", read: false, icon: "Briefcase", actionLabel: "Apply", actionPath: "/opportunities" },
+  { id: "n-5", category: "location", priority: "normal", title: "Library — Group Room A is free", body: "You bookmarked this space yesterday. 2 min walk.", time: "20 min ago", read: false, icon: "MapPin", actionLabel: "Reserve", actionPath: "/spaces" },
+  { id: "n-6", category: "class", priority: "normal", title: "ACC 102 venue confirmed: LT5", body: "No room change today. Lecture begins 2:00 PM.", time: "4h ago", read: true, icon: "Calendar" },
+  { id: "n-7", category: "announcement", priority: "normal", title: "New WiFi zone live at Sports Complex", body: "Connect with your student credentials.", time: "1d ago", read: true, icon: "Wifi" },
+  { id: "n-8", category: "deadline", priority: "low", title: "Library book due in 3 days", body: "Database Systems (Elmasri) — return or renew online.", time: "1d ago", read: true, icon: "BookOpen", actionLabel: "Renew", actionPath: "/resources" },
+  { id: "n-9", category: "location", priority: "low", title: "Print Hub queue cleared", body: "No wait right now if you need to print.", time: "2d ago", read: true, icon: "Printer" },
+];
+
+// ============= Command Center metrics =============
+export const commandCenter = {
+  liveActiveUsers: 1247,
+  activeUsersTrend: [820, 910, 1080, 1190, 1340, 1420, 1247],
+  classesInSession: 38,
+  classesTotalToday: 142,
+  hourlyActivity: [
+    { hour: "7", value: 120 }, { hour: "8", value: 480 }, { hour: "9", value: 920 },
+    { hour: "10", value: 1180 }, { hour: "11", value: 1320 }, { hour: "12", value: 980 },
+    { hour: "13", value: 760 }, { hour: "14", value: 1240 }, { hour: "15", value: 1180 },
+    { hour: "16", value: 920 }, { hour: "17", value: 540 }, { hour: "18", value: 220 },
+  ],
+  engagementByFeature: [
+    { feature: "Map", pct: 78 },
+    { feature: "Schedule", pct: 71 },
+    { feature: "Bot", pct: 64 },
+    { feature: "Queues", pct: 52 },
+    { feature: "Resources", pct: 47 },
+    { feature: "Spaces", pct: 39 },
+  ],
+  bottlenecks: [
+    { id: "b-1", label: "Bursary queue", detail: "21 in line · avg wait 26 min", severity: "critical" as const, path: "/queues" },
+    { id: "b-2", label: "WiFi at Student Center", detail: "12 reports in 2h", severity: "high" as const, path: "/incidents" },
+    { id: "b-3", label: "ICT Lab 3 occupancy", detail: "36 / 40 seats taken", severity: "high" as const, path: "/spaces" },
+    { id: "b-4", label: "Print Hub paper out", detail: "Reported 8 min ago", severity: "medium" as const, path: "/incidents" },
+  ],
+  criticalAlerts: [
+    { id: "a-1", title: "Water disruption — Wed 6AM-2PM", source: "Facilities", time: "3h ago", severity: "critical" as const },
+    { id: "a-2", title: "Registration closes Friday 5PM", source: "Academic Affairs", time: "5h ago", severity: "high" as const },
+    { id: "a-3", title: "Career Fair tomorrow 9AM", source: "Career Office", time: "6h ago", severity: "info" as const },
+  ],
+  topReportedIssues: [
+    { label: "WiFi / IT", count: 18, pct: 32 },
+    { label: "Electrical", count: 11, pct: 20 },
+    { label: "Plumbing", count: 9, pct: 16 },
+    { label: "Cleaning", count: 8, pct: 14 },
+    { label: "Facilities", count: 6, pct: 11 },
+    { label: "Other", count: 4, pct: 7 },
+  ],
+};
+
