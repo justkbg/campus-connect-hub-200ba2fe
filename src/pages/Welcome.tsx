@@ -71,6 +71,12 @@ export default function Welcome() {
           >
             I have an account
           </button>
+          <button
+            onClick={() => navigate("/visit")}
+            className="w-full py-3 rounded-2xl text-primary-foreground/80 font-medium text-xs active:scale-[0.98] transition-transform underline-offset-4 hover:underline"
+          >
+            Continue as Visitor →
+          </button>
         </motion.div>
       </motion.div>
     </div>
