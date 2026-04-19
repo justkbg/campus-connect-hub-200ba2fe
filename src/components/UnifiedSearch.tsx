@@ -129,7 +129,7 @@ export default function UnifiedSearch({ open, onOpenChange }: SearchProps) {
             <CommandItem key={`o-${o.id}`} onSelect={() => go("/opportunities")}>
               <Briefcase className="w-4 h-4 mr-2 text-warning" />
               <span className="flex-1 truncate">{o.title}</span>
-              <span className="text-[10px] text-muted-foreground">{o.category}</span>
+              <span className="text-[10px] text-muted-foreground">{o.type}</span>
             </CommandItem>
           ))}
         </CommandGroup>
