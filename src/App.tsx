@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { RoleProvider } from "@/contexts/RoleContext";
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
 import HomePage from "./pages/HomePage";
@@ -23,41 +24,47 @@ import SpacesPage from "./pages/SpacesPage";
 import OpportunitiesPage from "./pages/OpportunitiesPage";
 import SmartInboxPage from "./pages/SmartInboxPage";
 import CommandCenterPage from "./pages/CommandCenterPage";
+import VisitPage from "./pages/VisitPage";
+import ArrivalPage from "./pages/ArrivalPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/bot" element={<BotPage />} />
-          <Route path="/map" element={<MapPage />} />
-          <Route path="/schedule" element={<SchedulePage />} />
-          <Route path="/services" element={<ServicesPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/marketplace" element={<MarketplacePage />} />
-          <Route path="/resources" element={<ResourcesPage />} />
-          <Route path="/lecturer" element={<LecturerPortalPage />} />
-          <Route path="/course-rep" element={<CourseRepPortalPage />} />
-          <Route path="/queues" element={<QueuePage />} />
-          <Route path="/incidents" element={<IncidentsPage />} />
-          <Route path="/spaces" element={<SpacesPage />} />
-          <Route path="/opportunities" element={<OpportunitiesPage />} />
-          <Route path="/inbox" element={<SmartInboxPage />} />
-          <Route path="/command-center" element={<CommandCenterPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <RoleProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Welcome />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/visit" element={<VisitPage />} />
+            <Route path="/arrival" element={<ArrivalPage />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/bot" element={<BotPage />} />
+            <Route path="/map" element={<MapPage />} />
+            <Route path="/schedule" element={<SchedulePage />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/marketplace" element={<MarketplacePage />} />
+            <Route path="/resources" element={<ResourcesPage />} />
+            <Route path="/lecturer" element={<LecturerPortalPage />} />
+            <Route path="/course-rep" element={<CourseRepPortalPage />} />
+            <Route path="/queues" element={<QueuePage />} />
+            <Route path="/incidents" element={<IncidentsPage />} />
+            <Route path="/spaces" element={<SpacesPage />} />
+            <Route path="/opportunities" element={<OpportunitiesPage />} />
+            <Route path="/inbox" element={<SmartInboxPage />} />
+            <Route path="/command-center" element={<CommandCenterPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </RoleProvider>
   </QueryClientProvider>
 );
 
