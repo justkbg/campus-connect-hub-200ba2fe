@@ -272,6 +272,7 @@ export default function HomePage() {
         </section>
       </div>
       <BottomNav />
+      <UnifiedSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </PageShell>
   );
 }

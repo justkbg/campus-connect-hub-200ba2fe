@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
-import { Settings, Bell, HelpCircle, LogOut, Moon, ChevronRight, BookOpen, Calendar, Flame, ShoppingBag, FolderOpen, Users, Shield } from "lucide-react";
+import { Settings, Bell, HelpCircle, LogOut, Moon, ChevronRight, BookOpen, Calendar, Flame, ShoppingBag, FolderOpen, Users, Shield, UserCog } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
 import { currentUser } from "@/data/mockData";
+import { useRole, ROLE_PROFILES, AppRole } from "@/contexts/RoleContext";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
