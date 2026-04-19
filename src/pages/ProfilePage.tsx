@@ -66,6 +66,43 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* Active role + switcher */}
+        <div className="px-5 mb-3">
+          <div className="bg-card rounded-2xl p-4 shadow-card">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                <UserCog className="w-4 h-4 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Active role</p>
+                <p className="text-sm font-semibold text-foreground">
+                  {ROLE_PROFILES[role].emoji} {ROLE_PROFILES[role].label}
+                </p>
+              </div>
+            </div>
+            <p className="text-[11px] text-muted-foreground mb-3">{ROLE_PROFILES[role].description}</p>
+            <div className="flex flex-wrap gap-1.5">
+              {switchRoles.map((r) => {
+                const p = ROLE_PROFILES[r];
+                const active = role === r;
+                return (
+                  <button
+                    key={r}
+                    onClick={() => { setRole(r); navigate(p.homePath); }}
+                    className={`px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all border ${
+                      active
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-muted text-muted-foreground border-transparent hover:text-foreground"
+                    }`}
+                  >
+                    {p.emoji} {p.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
         {/* Menu */}
         <div className="px-5 space-y-2">
           {/* Dark mode toggle */}
