@@ -65,6 +65,26 @@ export default function AdminPage() {
           </div>
         </div>
 
+        {/* Command Center entry */}
+        <section className="px-5 mt-5">
+          <Link to="/command-center"
+            className="block rounded-2xl p-4 shadow-premium bg-gradient-to-br from-primary to-accent text-primary-foreground active:scale-[0.99] transition-transform"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-primary-foreground/20 flex items-center justify-center flex-shrink-0">
+                <Activity className="w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-bold">Open Command Center</p>
+                <p className="text-[11px] text-primary-foreground/80">Live operations · alerts · bottlenecks</p>
+              </div>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/30 text-[10px] font-bold border border-success/40">
+                LIVE
+              </span>
+            </div>
+          </Link>
+        </section>
+
         {/* Admin Actions */}
         <section className="px-5 mt-5">
           <h2 className="text-sm font-bold text-foreground mb-3">Admin Actions</h2>
