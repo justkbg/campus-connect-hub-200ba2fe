@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Bell, Search, MapPin, MessageSquare, Calendar, Briefcase, ChevronRight, Clock, AlertTriangle, Megaphone, BookOpen, ShoppingBag, Link2, FolderOpen, Navigation, Timer, Ticket, AlertOctagon, Building } from "lucide-react";
+import { Bell, Search, MapPin, MessageSquare, Calendar, Briefcase, ChevronRight, Clock, AlertTriangle, Megaphone, BookOpen, ShoppingBag, Link2, FolderOpen, Navigation, Timer, Ticket, AlertOctagon, Building, Compass } from "lucide-react";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
 import StatusBadge from "@/components/StatusBadge";
+import UnifiedSearch from "@/components/UnifiedSearch";
 import { currentUser, announcements, events, todaySchedule, notifications } from "@/data/mockData";
 import { upsaBuildings } from "@/components/CampusMap";
 import { Link } from "react-router-dom";
