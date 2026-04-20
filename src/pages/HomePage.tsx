@@ -57,6 +57,16 @@ function formatEta(ms: number): { label: string; tone: "soon" | "now" | "later" 
 }
 
 export default function HomePage() {
+  const { role } = useRole();
+  if (role === "lecturer") return <LecturerHome />;
+  if (role === "admin") return <AdminHome />;
+  if (role === "leadership") return <LeadershipHome />;
+  if (role === "alumni") return <AlumniHome />;
+  if (role === "parent") return <ParentHome />;
+  if (role === "applicant") return <ApplicantHome />;
+  if (role === "vendor") return <VendorHome />;
+  if (role === "visitor") return <Navigate to="/visit" replace />;
+
   const nextClass = todaySchedule.find((c) => c.status === "upcoming" || c.status === "ongoing");
   const now = new Date();
   const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
