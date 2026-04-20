@@ -66,7 +66,10 @@ export default function HomePage() {
   if (role === "applicant") return <ApplicantHome />;
   if (role === "vendor") return <VendorHome />;
   if (role === "visitor") return <Navigate to="/visit" replace />;
+  return <StudentHome />;
+}
 
+function StudentHome() {
   const nextClass = todaySchedule.find((c) => c.status === "upcoming" || c.status === "ongoing");
   const now = new Date();
   const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
