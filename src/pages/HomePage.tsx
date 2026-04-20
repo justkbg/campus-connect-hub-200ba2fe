@@ -5,9 +5,12 @@ import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
 import StatusBadge from "@/components/StatusBadge";
 import UnifiedSearch from "@/components/UnifiedSearch";
+import LiveCampusDashboard from "@/components/LiveCampusDashboard";
 import { currentUser, announcements, events, todaySchedule, notifications } from "@/data/mockData";
 import { upsaBuildings } from "@/components/CampusMap";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useRole } from "@/contexts/RoleContext";
+import { LecturerHome, AdminHome, LeadershipHome, AlumniHome, ParentHome, ApplicantHome, VendorHome } from "./RoleHomes";
 
 const quickActions = [
   { icon: MessageSquare, label: "Ask Bot", path: "/bot", color: "bg-primary/10 text-primary" },
