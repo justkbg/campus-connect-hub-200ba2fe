@@ -205,7 +205,12 @@ function StudentHome() {
           </button>
         </div>
 
-        {/* Announcements */}
+        {/* Live campus dashboard */}
+        <div className="px-5 mt-4">
+          <LiveCampusDashboard variant="compact" />
+        </div>
+
+
         <motion.section variants={stagger} initial="hidden" animate="show" className="px-5 mt-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-foreground">Announcements</h2>
