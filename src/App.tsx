@@ -26,6 +26,8 @@ import SmartInboxPage from "./pages/SmartInboxPage";
 import CommandCenterPage from "./pages/CommandCenterPage";
 import VisitPage from "./pages/VisitPage";
 import ArrivalPage from "./pages/ArrivalPage";
+import AlumniHubPage from "./pages/AlumniHubPage";
+import ParentPortalPage from "./pages/ParentPortalPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -60,6 +62,8 @@ const App = () => (
             <Route path="/opportunities" element={<OpportunitiesPage />} />
             <Route path="/inbox" element={<SmartInboxPage />} />
             <Route path="/command-center" element={<CommandCenterPage />} />
+            <Route path="/alumni" element={<AlumniHubPage />} />
+            <Route path="/parent" element={<ParentPortalPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

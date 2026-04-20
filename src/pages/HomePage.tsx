@@ -5,9 +5,12 @@ import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
 import StatusBadge from "@/components/StatusBadge";
 import UnifiedSearch from "@/components/UnifiedSearch";
+import LiveCampusDashboard from "@/components/LiveCampusDashboard";
 import { currentUser, announcements, events, todaySchedule, notifications } from "@/data/mockData";
 import { upsaBuildings } from "@/components/CampusMap";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useRole } from "@/contexts/RoleContext";
+import { LecturerHome, AdminHome, LeadershipHome, AlumniHome, ParentHome, ApplicantHome, VendorHome } from "./RoleHomes";
 
 const quickActions = [
   { icon: MessageSquare, label: "Ask Bot", path: "/bot", color: "bg-primary/10 text-primary" },
@@ -54,6 +57,19 @@ function formatEta(ms: number): { label: string; tone: "soon" | "now" | "later" 
 }
 
 export default function HomePage() {
+  const { role } = useRole();
+  if (role === "lecturer") return <LecturerHome />;
+  if (role === "admin") return <AdminHome />;
+  if (role === "leadership") return <LeadershipHome />;
+  if (role === "alumni") return <AlumniHome />;
+  if (role === "parent") return <ParentHome />;
+  if (role === "applicant") return <ApplicantHome />;
+  if (role === "vendor") return <VendorHome />;
+  if (role === "visitor") return <Navigate to="/visit" replace />;
+  return <StudentHome />;
+}
+
+function StudentHome() {
   const nextClass = todaySchedule.find((c) => c.status === "upcoming" || c.status === "ongoing");
   const now = new Date();
   const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
@@ -189,7 +205,12 @@ export default function HomePage() {
           </button>
         </div>
 
-        {/* Announcements */}
+        {/* Live campus dashboard */}
+        <div className="px-5 mt-4">
+          <LiveCampusDashboard variant="compact" />
+        </div>
+
+
         <motion.section variants={stagger} initial="hidden" animate="show" className="px-5 mt-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-foreground">Announcements</h2>

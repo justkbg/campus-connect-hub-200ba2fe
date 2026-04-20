@@ -8,6 +8,7 @@ import { useState } from "react";
 import { announcements, events, services } from "@/data/mockData";
 import { upsaBuildings } from "@/components/CampusMap";
 import UnifiedSearch from "@/components/UnifiedSearch";
+import LiveCampusDashboard from "@/components/LiveCampusDashboard";
 import { useRole } from "@/contexts/RoleContext";
 
 const visitorTiles = [
@@ -127,6 +128,11 @@ export default function VisitPage() {
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
           </div>
         </Link>
+
+        {/* Live campus dashboard */}
+        <section id="live" className="mt-6">
+          <LiveCampusDashboard variant="full" title="Live campus dashboard" />
+        </section>
 
         {/* Parking */}
         <section className="mt-6">
