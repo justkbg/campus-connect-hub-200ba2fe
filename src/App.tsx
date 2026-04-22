@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RoleProvider } from "@/contexts/RoleContext";
+import IntroLoader from "@/components/IntroLoader";
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
 import HomePage from "./pages/HomePage";
@@ -28,48 +30,56 @@ import VisitPage from "./pages/VisitPage";
 import ArrivalPage from "./pages/ArrivalPage";
 import AlumniHubPage from "./pages/AlumniHubPage";
 import ParentPortalPage from "./pages/ParentPortalPage";
+import ChannelsPage from "./pages/ChannelsPage";
+import ChannelDetailPage from "./pages/ChannelDetailPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <RoleProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Welcome />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/visit" element={<VisitPage />} />
-            <Route path="/arrival" element={<ArrivalPage />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/bot" element={<BotPage />} />
-            <Route path="/map" element={<MapPage />} />
-            <Route path="/schedule" element={<SchedulePage />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/admin" element={<AdminPage />} />
-            <Route path="/notifications" element={<NotificationsPage />} />
-            <Route path="/marketplace" element={<MarketplacePage />} />
-            <Route path="/resources" element={<ResourcesPage />} />
-            <Route path="/lecturer" element={<LecturerPortalPage />} />
-            <Route path="/course-rep" element={<CourseRepPortalPage />} />
-            <Route path="/queues" element={<QueuePage />} />
-            <Route path="/incidents" element={<IncidentsPage />} />
-            <Route path="/spaces" element={<SpacesPage />} />
-            <Route path="/opportunities" element={<OpportunitiesPage />} />
-            <Route path="/inbox" element={<SmartInboxPage />} />
-            <Route path="/command-center" element={<CommandCenterPage />} />
-            <Route path="/alumni" element={<AlumniHubPage />} />
-            <Route path="/parent" element={<ParentPortalPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </RoleProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const [introDone, setIntroDone] = useState(false);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RoleProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          {!introDone && <IntroLoader onDone={() => setIntroDone(true)} />}
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Welcome />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/visit" element={<VisitPage />} />
+              <Route path="/arrival" element={<ArrivalPage />} />
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/bot" element={<BotPage />} />
+              <Route path="/map" element={<MapPage />} />
+              <Route path="/schedule" element={<SchedulePage />} />
+              <Route path="/services" element={<ServicesPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/marketplace" element={<MarketplacePage />} />
+              <Route path="/resources" element={<ResourcesPage />} />
+              <Route path="/lecturer" element={<LecturerPortalPage />} />
+              <Route path="/course-rep" element={<CourseRepPortalPage />} />
+              <Route path="/queues" element={<QueuePage />} />
+              <Route path="/incidents" element={<IncidentsPage />} />
+              <Route path="/spaces" element={<SpacesPage />} />
+              <Route path="/opportunities" element={<OpportunitiesPage />} />
+              <Route path="/inbox" element={<SmartInboxPage />} />
+              <Route path="/command-center" element={<CommandCenterPage />} />
+              <Route path="/alumni" element={<AlumniHubPage />} />
+              <Route path="/parent" element={<ParentPortalPage />} />
+              <Route path="/channels" element={<ChannelsPage />} />
+              <Route path="/channels/:id" element={<ChannelDetailPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </RoleProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

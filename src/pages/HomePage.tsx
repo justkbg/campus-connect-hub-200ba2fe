@@ -1,26 +1,28 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Bell, Search, MapPin, MessageSquare, Calendar, Briefcase, ChevronRight, Clock, AlertTriangle, Megaphone, BookOpen, ShoppingBag, Link2, FolderOpen, Navigation, Timer, Ticket, AlertOctagon, Building, Compass } from "lucide-react";
+import { Bell, Search, MapPin, MessageSquare, Calendar, Briefcase, ChevronRight, Clock, AlertTriangle, Megaphone, BookOpen, ShoppingBag, Link2, FolderOpen, Navigation, Timer, Ticket, AlertOctagon, Building, Compass, Radio, Sparkles } from "lucide-react";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
 import StatusBadge from "@/components/StatusBadge";
 import UnifiedSearch from "@/components/UnifiedSearch";
 import LiveCampusDashboard from "@/components/LiveCampusDashboard";
-import { currentUser, announcements, events, todaySchedule, notifications } from "@/data/mockData";
+import PostCard from "@/components/channels/PostCard";
+import { currentUser, events, todaySchedule, notifications } from "@/data/mockData";
 import { upsaBuildings } from "@/components/CampusMap";
+import { getTodaysKeyUpdates } from "@/data/channelsData";
 import { Link, Navigate } from "react-router-dom";
 import { useRole } from "@/contexts/RoleContext";
 import { LecturerHome, AdminHome, LeadershipHome, AlumniHome, ParentHome, ApplicantHome, VendorHome } from "./RoleHomes";
 
 const quickActions = [
-  { icon: MessageSquare, label: "Ask Bot", path: "/bot", color: "bg-primary/10 text-primary" },
+  { icon: Radio, label: "Channels", path: "/channels", color: "bg-primary/10 text-primary" },
   { icon: MapPin, label: "Map", path: "/map", color: "bg-accent/10 text-accent" },
   { icon: Calendar, label: "Timetable", path: "/schedule", color: "bg-success/10 text-success" },
-  { icon: Briefcase, label: "Opportunities", path: "/opportunities", color: "bg-warning/10 text-warning" },
-  { icon: Ticket, label: "Queues", path: "/queues", color: "bg-primary/10 text-primary" },
+  { icon: MessageSquare, label: "Ask Bot", path: "/bot", color: "bg-primary/10 text-primary" },
+  { icon: Ticket, label: "Queues", path: "/queues", color: "bg-warning/10 text-warning" },
   { icon: Building, label: "Spaces", path: "/spaces", color: "bg-accent/10 text-accent" },
+  { icon: Briefcase, label: "Opportunities", path: "/opportunities", color: "bg-primary/10 text-primary" },
   { icon: AlertOctagon, label: "Report", path: "/incidents", color: "bg-destructive/10 text-destructive" },
-  { icon: FolderOpen, label: "Resources", path: "/resources", color: "bg-success/10 text-success" },
 ];
 
 const announcementIcons = { urgent: AlertTriangle, important: Megaphone, info: Bell };
@@ -213,35 +215,18 @@ function StudentHome() {
 
         <motion.section variants={stagger} initial="hidden" animate="show" className="px-5 mt-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-foreground">Announcements</h2>
-            <Link to="/inbox" className="text-xs text-primary font-medium">See all</Link>
+            <div className="flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
+              <h2 className="text-sm font-bold text-foreground">Today's Key Updates</h2>
+            </div>
+            <Link to="/channels" className="text-xs text-primary font-medium">All channels</Link>
           </div>
           <div className="space-y-2.5">
-            {announcements.slice(0, 3).map((a) => {
-              const Icon = announcementIcons[a.type];
-              return (
-                <motion.div key={a.id} variants={fadeUp} className="bg-card rounded-2xl p-4 shadow-card">
-                  <div className="flex items-start gap-3">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      a.type === "urgent" ? "bg-destructive/10" : a.type === "important" ? "bg-warning/10" : "bg-accent/10"
-                    }`}>
-                      <Icon className={`w-4 h-4 ${
-                        a.type === "urgent" ? "text-destructive" : a.type === "important" ? "text-warning" : "text-accent"
-                      }`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <StatusBadge status={a.type} />
-                        <span className="text-[11px] text-muted-foreground">{a.time}</span>
-                      </div>
-                      <p className="text-sm font-semibold text-foreground leading-snug">{a.title}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{a.department}</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-1" />
-                  </div>
-                </motion.div>
-              );
-            })}
+            {getTodaysKeyUpdates(3).map((p) => (
+              <motion.div key={p.id} variants={fadeUp}>
+                <PostCard post={p} />
+              </motion.div>
+            ))}
           </div>
         </motion.section>
 

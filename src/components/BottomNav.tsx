@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Home, Map, MessageSquare, Calendar, User, Bell, Compass,
   LayoutDashboard, ShieldCheck, Briefcase, GraduationCap, Heart, Users,
-  Building2, Megaphone, Wallet, ShoppingBag, Ticket,
+  Building2, Megaphone, Wallet, ShoppingBag, Ticket, Radio,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { notifications } from "@/data/mockData";
@@ -15,9 +15,9 @@ type Tab = { path: string; icon: any; label: string };
 const TABS_BY_ROLE: Record<AppRole, Tab[]> = {
   student: [
     { path: "/home", icon: Home, label: "Home" },
+    { path: "/channels", icon: Radio, label: "Channels" },
     { path: "/map", icon: Map, label: "Map" },
     { path: "/bot", icon: MessageSquare, label: "Bot" },
-    { path: "/schedule", icon: Calendar, label: "Schedule" },
     { path: "/profile", icon: User, label: "Profile" },
   ],
   lecturer: [
