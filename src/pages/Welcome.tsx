@@ -1,13 +1,16 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Zap } from "lucide-react";
+import GridFieldCanvas from "@/components/fx/GridFieldCanvas";
 
 export default function Welcome() {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 gradient-hero relative overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden">
+      {/* Subtle digital-campus grid */}
+      <GridFieldCanvas className="absolute inset-0 w-full h-full opacity-70" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 -left-20 w-64 h-64 rounded-full bg-primary-foreground/5 blur-3xl" />
         <div className="absolute bottom-1/4 -right-20 w-80 h-80 rounded-full bg-primary-foreground/5 blur-3xl" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-accent/10 blur-3xl" />

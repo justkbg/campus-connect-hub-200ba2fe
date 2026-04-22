@@ -23,16 +23,49 @@ function Sparkline({ values, accent = "hsl(var(--primary))" }: { values: number[
   const pts = values.map((v, i) => [pad + i * step, h - pad - ((v - min) / span) * (h - pad * 2)]);
   const d = pts.map((p, i) => (i === 0 ? `M${p[0]},${p[1]}` : `L${p[0]},${p[1]}`)).join(" ");
   const area = `${d} L${pts[pts.length - 1][0]},${h} L${pts[0][0]},${h} Z`;
+  const last = pts[pts.length - 1];
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-14">
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-14 overflow-visible">
       <defs>
         <linearGradient id="sg" x1="0" x2="0" y1="0" y2="1">
           <stop offset="0%" stopColor={accent} stopOpacity="0.35" />
           <stop offset="100%" stopColor={accent} stopOpacity="0" />
         </linearGradient>
+        <filter id="sg-glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.4" result="b" />
+          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
       </defs>
-      <path d={area} fill="url(#sg)" />
-      <path d={d} stroke={accent} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <motion.path
+        d={area}
+        fill="url(#sg)"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+      />
+      <motion.path
+        d={d}
+        stroke={accent}
+        strokeWidth="2"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        filter="url(#sg-glow)"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1.4, ease: "easeInOut" }}
+      />
+      <motion.circle
+        cx={last[0]} cy={last[1]} r="3" fill={accent}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: [0, 1, 1], scale: [0, 1.4, 1] }}
+        transition={{ duration: 1.6, times: [0, 0.85, 1] }}
+      />
+      <motion.circle
+        cx={last[0]} cy={last[1]} r="3" fill="none" stroke={accent} strokeWidth="1.5"
+        animate={{ r: [3, 9], opacity: [0.6, 0] }}
+        transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
+      />
     </svg>
   );
 }
@@ -77,12 +110,26 @@ export default function CommandCenterPage() {
 
           {/* Hero metric */}
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-4 border border-primary-foreground/10"
+            className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-4 border border-primary-foreground/10 relative overflow-hidden"
           >
-            <div className="flex items-center justify-between">
+            {/* scanning shimmer */}
+            <motion.div
+              aria-hidden
+              className="absolute inset-y-0 -left-1/3 w-1/3 pointer-events-none"
+              style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)" }}
+              animate={{ x: ["0%", "420%"] }}
+              transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.4 }}
+            />
+            <div className="flex items-center justify-between relative">
               <div>
                 <p className="text-[11px] font-medium text-primary-foreground/60 uppercase tracking-wider">Active users right now</p>
-                <p className="text-3xl font-bold text-primary-foreground mt-1 tabular-nums">{live.toLocaleString()}</p>
+                <motion.p
+                  key={live}
+                  initial={{ opacity: 0.6, y: -2 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="text-3xl font-bold text-primary-foreground mt-1 tabular-nums"
+                >{live.toLocaleString()}</motion.p>
                 <p className="text-[11px] text-primary-foreground/60 mt-1 inline-flex items-center gap-1">
                   <ArrowUpRight className="w-3 h-3 text-success" /> +12% vs last week
                 </p>

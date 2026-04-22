@@ -376,7 +376,7 @@ export default function CampusMap({
               lineJoin: "round",
             }}
           />
-          {/* Inner route */}
+          {/* Inner route — animated flowing dashes */}
           <Polyline
             positions={routePath}
             pathOptions={{
@@ -385,7 +385,7 @@ export default function CampusMap({
               opacity: 0.95,
               lineCap: "round",
               lineJoin: "round",
-              dashArray: routing ? "6 8" : undefined,
+              className: "route-flow",
             }}
           />
         </>

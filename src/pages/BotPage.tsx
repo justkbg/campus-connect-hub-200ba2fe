@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
+import AmbientAura from "@/components/fx/AmbientAura";
+import SoundBars from "@/components/fx/SoundBars";
 import { botResponses, currentUser, todaySchedule, queueOffices, opportunities } from "@/data/mockData";
 import { upsaBuildings } from "@/components/CampusMap";
 
@@ -185,11 +187,14 @@ export default function BotPage() {
 
   return (
     <PageShell className="flex flex-col">
-      <div className="max-w-lg mx-auto flex flex-col flex-1 w-full">
+      <div className="max-w-lg mx-auto flex flex-col flex-1 w-full relative">
+        {/* Ambient reactive aura — intensifies while typing */}
+        <AmbientAura active={typing} />
+
         {/* Header */}
-        <div className="px-5 pt-12 pb-4">
+        <div className="px-5 pt-12 pb-4 relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl gradient-primary flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl gradient-primary flex items-center justify-center shadow-premium">
               <Sparkles className="w-5 h-5 text-primary-foreground" />
             </div>
             <div className="flex-1 min-w-0">
@@ -268,10 +273,11 @@ export default function BotPage() {
           </AnimatePresence>
 
           {typing && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-1 pl-2 py-3">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-pulse-soft" style={{ animationDelay: `${i * 0.2}s` }} />
-              ))}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 pl-2 py-3">
+              <div className="px-3 py-2 rounded-2xl bg-card shadow-card flex items-center gap-2">
+                <SoundBars active />
+                <span className="text-[11px] text-muted-foreground">thinking…</span>
+              </div>
             </motion.div>
           )}
           <div ref={bottomRef} />
