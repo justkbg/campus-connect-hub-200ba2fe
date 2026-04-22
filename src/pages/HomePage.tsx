@@ -215,35 +215,18 @@ function StudentHome() {
 
         <motion.section variants={stagger} initial="hidden" animate="show" className="px-5 mt-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-foreground">Announcements</h2>
-            <Link to="/inbox" className="text-xs text-primary font-medium">See all</Link>
+            <div className="flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
+              <h2 className="text-sm font-bold text-foreground">Today's Key Updates</h2>
+            </div>
+            <Link to="/channels" className="text-xs text-primary font-medium">All channels</Link>
           </div>
           <div className="space-y-2.5">
-            {announcements.slice(0, 3).map((a) => {
-              const Icon = announcementIcons[a.type];
-              return (
-                <motion.div key={a.id} variants={fadeUp} className="bg-card rounded-2xl p-4 shadow-card">
-                  <div className="flex items-start gap-3">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      a.type === "urgent" ? "bg-destructive/10" : a.type === "important" ? "bg-warning/10" : "bg-accent/10"
-                    }`}>
-                      <Icon className={`w-4 h-4 ${
-                        a.type === "urgent" ? "text-destructive" : a.type === "important" ? "text-warning" : "text-accent"
-                      }`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <StatusBadge status={a.type} />
-                        <span className="text-[11px] text-muted-foreground">{a.time}</span>
-                      </div>
-                      <p className="text-sm font-semibold text-foreground leading-snug">{a.title}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{a.department}</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-1" />
-                  </div>
-                </motion.div>
-              );
-            })}
+            {getTodaysKeyUpdates(3).map((p) => (
+              <motion.div key={p.id} variants={fadeUp}>
+                <PostCard post={p} />
+              </motion.div>
+            ))}
           </div>
         </motion.section>
 
