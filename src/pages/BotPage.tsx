@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
+import AmbientAura from "@/components/fx/AmbientAura";
+import SoundBars from "@/components/fx/SoundBars";
 import { botResponses, currentUser, todaySchedule, queueOffices, opportunities } from "@/data/mockData";
 import { upsaBuildings } from "@/components/CampusMap";
 
