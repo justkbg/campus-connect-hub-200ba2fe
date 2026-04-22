@@ -110,12 +110,26 @@ export default function CommandCenterPage() {
 
           {/* Hero metric */}
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-4 border border-primary-foreground/10"
+            className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-4 border border-primary-foreground/10 relative overflow-hidden"
           >
-            <div className="flex items-center justify-between">
+            {/* scanning shimmer */}
+            <motion.div
+              aria-hidden
+              className="absolute inset-y-0 -left-1/3 w-1/3 pointer-events-none"
+              style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)" }}
+              animate={{ x: ["0%", "420%"] }}
+              transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.4 }}
+            />
+            <div className="flex items-center justify-between relative">
               <div>
                 <p className="text-[11px] font-medium text-primary-foreground/60 uppercase tracking-wider">Active users right now</p>
-                <p className="text-3xl font-bold text-primary-foreground mt-1 tabular-nums">{live.toLocaleString()}</p>
+                <motion.p
+                  key={live}
+                  initial={{ opacity: 0.6, y: -2 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="text-3xl font-bold text-primary-foreground mt-1 tabular-nums"
+                >{live.toLocaleString()}</motion.p>
                 <p className="text-[11px] text-primary-foreground/60 mt-1 inline-flex items-center gap-1">
                   <ArrowUpRight className="w-3 h-3 text-success" /> +12% vs last week
                 </p>
