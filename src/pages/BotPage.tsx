@@ -273,10 +273,11 @@ export default function BotPage() {
           </AnimatePresence>
 
           {typing && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-1 pl-2 py-3">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-pulse-soft" style={{ animationDelay: `${i * 0.2}s` }} />
-              ))}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 pl-2 py-3">
+              <div className="px-3 py-2 rounded-2xl bg-card shadow-card flex items-center gap-2">
+                <SoundBars active />
+                <span className="text-[11px] text-muted-foreground">thinking…</span>
+              </div>
             </motion.div>
           )}
           <div ref={bottomRef} />
