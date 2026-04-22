@@ -1,26 +1,28 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Bell, Search, MapPin, MessageSquare, Calendar, Briefcase, ChevronRight, Clock, AlertTriangle, Megaphone, BookOpen, ShoppingBag, Link2, FolderOpen, Navigation, Timer, Ticket, AlertOctagon, Building, Compass } from "lucide-react";
+import { Bell, Search, MapPin, MessageSquare, Calendar, Briefcase, ChevronRight, Clock, AlertTriangle, Megaphone, BookOpen, ShoppingBag, Link2, FolderOpen, Navigation, Timer, Ticket, AlertOctagon, Building, Compass, Radio, Sparkles } from "lucide-react";
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
 import StatusBadge from "@/components/StatusBadge";
 import UnifiedSearch from "@/components/UnifiedSearch";
 import LiveCampusDashboard from "@/components/LiveCampusDashboard";
-import { currentUser, announcements, events, todaySchedule, notifications } from "@/data/mockData";
+import PostCard from "@/components/channels/PostCard";
+import { currentUser, events, todaySchedule, notifications } from "@/data/mockData";
 import { upsaBuildings } from "@/components/CampusMap";
+import { getTodaysKeyUpdates } from "@/data/channelsData";
 import { Link, Navigate } from "react-router-dom";
 import { useRole } from "@/contexts/RoleContext";
 import { LecturerHome, AdminHome, LeadershipHome, AlumniHome, ParentHome, ApplicantHome, VendorHome } from "./RoleHomes";
 
 const quickActions = [
-  { icon: MessageSquare, label: "Ask Bot", path: "/bot", color: "bg-primary/10 text-primary" },
+  { icon: Radio, label: "Channels", path: "/channels", color: "bg-primary/10 text-primary" },
   { icon: MapPin, label: "Map", path: "/map", color: "bg-accent/10 text-accent" },
   { icon: Calendar, label: "Timetable", path: "/schedule", color: "bg-success/10 text-success" },
-  { icon: Briefcase, label: "Opportunities", path: "/opportunities", color: "bg-warning/10 text-warning" },
-  { icon: Ticket, label: "Queues", path: "/queues", color: "bg-primary/10 text-primary" },
+  { icon: MessageSquare, label: "Ask Bot", path: "/bot", color: "bg-primary/10 text-primary" },
+  { icon: Ticket, label: "Queues", path: "/queues", color: "bg-warning/10 text-warning" },
   { icon: Building, label: "Spaces", path: "/spaces", color: "bg-accent/10 text-accent" },
+  { icon: Briefcase, label: "Opportunities", path: "/opportunities", color: "bg-primary/10 text-primary" },
   { icon: AlertOctagon, label: "Report", path: "/incidents", color: "bg-destructive/10 text-destructive" },
-  { icon: FolderOpen, label: "Resources", path: "/resources", color: "bg-success/10 text-success" },
 ];
 
 const announcementIcons = { urgent: AlertTriangle, important: Megaphone, info: Bell };
