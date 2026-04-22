@@ -23,16 +23,49 @@ function Sparkline({ values, accent = "hsl(var(--primary))" }: { values: number[
   const pts = values.map((v, i) => [pad + i * step, h - pad - ((v - min) / span) * (h - pad * 2)]);
   const d = pts.map((p, i) => (i === 0 ? `M${p[0]},${p[1]}` : `L${p[0]},${p[1]}`)).join(" ");
   const area = `${d} L${pts[pts.length - 1][0]},${h} L${pts[0][0]},${h} Z`;
+  const last = pts[pts.length - 1];
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-14">
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-14 overflow-visible">
       <defs>
         <linearGradient id="sg" x1="0" x2="0" y1="0" y2="1">
           <stop offset="0%" stopColor={accent} stopOpacity="0.35" />
           <stop offset="100%" stopColor={accent} stopOpacity="0" />
         </linearGradient>
+        <filter id="sg-glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.4" result="b" />
+          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
       </defs>
-      <path d={area} fill="url(#sg)" />
-      <path d={d} stroke={accent} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <motion.path
+        d={area}
+        fill="url(#sg)"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+      />
+      <motion.path
+        d={d}
+        stroke={accent}
+        strokeWidth="2"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        filter="url(#sg-glow)"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1.4, ease: "easeInOut" }}
+      />
+      <motion.circle
+        cx={last[0]} cy={last[1]} r="3" fill={accent}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: [0, 1, 1], scale: [0, 1.4, 1] }}
+        transition={{ duration: 1.6, times: [0, 0.85, 1] }}
+      />
+      <motion.circle
+        cx={last[0]} cy={last[1]} r="3" fill="none" stroke={accent} strokeWidth="1.5"
+        animate={{ r: [3, 9], opacity: [0.6, 0] }}
+        transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
+      />
     </svg>
   );
 }
