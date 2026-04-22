@@ -187,11 +187,14 @@ export default function BotPage() {
 
   return (
     <PageShell className="flex flex-col">
-      <div className="max-w-lg mx-auto flex flex-col flex-1 w-full">
+      <div className="max-w-lg mx-auto flex flex-col flex-1 w-full relative">
+        {/* Ambient reactive aura — intensifies while typing */}
+        <AmbientAura active={typing} />
+
         {/* Header */}
-        <div className="px-5 pt-12 pb-4">
+        <div className="px-5 pt-12 pb-4 relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl gradient-primary flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl gradient-primary flex items-center justify-center shadow-premium">
               <Sparkles className="w-5 h-5 text-primary-foreground" />
             </div>
             <div className="flex-1 min-w-0">
