@@ -32,6 +32,24 @@ export type PostAttachment =
   | { kind: "link"; label: string; url: string }
   | { kind: "image"; label: string; url: string };
 
+// Strict, lightweight media — kept separate from attachments so the UI can render
+// a clean preview gallery (images) or a single thumbnail-based player (video).
+export type PostMedia =
+  | { kind: "image"; url: string; alt?: string; width?: number; height?: number }
+  | { kind: "video"; url: string; poster: string; durationSec?: number; alt?: string };
+
+export type ReactionKind = "helpful" | "important" | "seen";
+
+export type PostComment = {
+  id: string;
+  author: string;
+  authorRole: string;
+  verified?: boolean;
+  body: string;
+  publishedISO: string;
+  parentId?: string; // threaded
+};
+
 export type Post = {
   id: string;
   channelId: string;
@@ -40,16 +58,22 @@ export type Post = {
   body: string;
   authorName: string;
   authorRole: string;
+  authorVerified?: boolean;
   publishedISO: string;
   pinned?: boolean;
   priority?: "normal" | "high" | "critical";
   attachments?: PostAttachment[];
+  media?: PostMedia[];
   // optional structured metadata per type
   event?: { startISO: string; endISO?: string; location?: string };
   location?: { label: string; buildingId?: number };
   // engagement (kept minimal — no infinite social signals)
   saves?: number;
   reads?: number;
+  reactions?: Partial<Record<ReactionKind, number>>;
+  // controlled comments — default off; admins enable per post
+  commentsEnabled?: boolean;
+  comments?: PostComment[];
 };
 
 const now = Date.now();
