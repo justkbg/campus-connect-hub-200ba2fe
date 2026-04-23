@@ -238,6 +238,34 @@ export const posts: Post[] = [
     publishedISO: iso(60),
     event: { startISO: future(60 * 24), endISO: future(60 * 26), location: "LT3" },
     location: { label: "Lecture Theatre 3 (LT3)", buildingId: 2 },
+    media: [
+      {
+        kind: "image",
+        url: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200&q=70&auto=format&fit=crop",
+        alt: "Lecture theatre seating with projection screen",
+      },
+    ],
+    reactions: { helpful: 42, important: 18, seen: 156 },
+    commentsEnabled: true,
+    authorVerified: true,
+    comments: [
+      {
+        id: "c-5-1",
+        author: "Kofi M.",
+        authorRole: "Student · Level 300",
+        body: "Will the recording be shared for those who can't attend?",
+        publishedISO: iso(45),
+      },
+      {
+        id: "c-5-2",
+        author: "Dr. Ama Serwaa",
+        authorRole: "Course Lecturer",
+        verified: true,
+        body: "Yes — I'll upload it under Resources within 24h of the session.",
+        publishedISO: iso(40),
+        parentId: "c-5-1",
+      },
+    ],
   },
   {
     id: "p-6",
@@ -247,8 +275,10 @@ export const posts: Post[] = [
     body: "Outstanding balances must be cleared by Friday 5:00 PM to avoid examination hold. Pay via the student portal or any partner bank.",
     authorName: "Bursary Office",
     authorRole: "Office",
+    authorVerified: true,
     publishedISO: iso(300),
     priority: "high",
+    reactions: { important: 88, seen: 412 },
   },
   {
     id: "p-7",
@@ -258,10 +288,24 @@ export const posts: Post[] = [
     body: "Over 40 employers across finance, tech and consulting. Bring printed CVs. Dress code: business formal.",
     authorName: "Career Services Office",
     authorRole: "Office",
+    authorVerified: true,
     publishedISO: iso(360),
     event: { startISO: future(60 * 18), endISO: future(60 * 24), location: "Main Auditorium" },
     location: { label: "Main Auditorium", buildingId: 8 },
     attachments: [{ kind: "link", label: "Participating employers", url: "#" }],
+    media: [
+      {
+        kind: "image",
+        url: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1200&q=70&auto=format&fit=crop",
+        alt: "Career fair attendees networking",
+      },
+      {
+        kind: "image",
+        url: "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=1200&q=70&auto=format&fit=crop",
+        alt: "Employer booth at career event",
+      },
+    ],
+    reactions: { helpful: 64, important: 31, seen: 280 },
   },
   {
     id: "p-8",
