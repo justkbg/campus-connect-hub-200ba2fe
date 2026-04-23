@@ -6,6 +6,7 @@ import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
 import CampusMap, { upsaBuildings, UPSA_CENTER, CampusBuilding, RouteStep } from "@/components/CampusMap";
 import { todaySchedule } from "@/data/mockData";
+import PlaceReviewsCard from "@/components/PlaceReviewsCard";
 
 const categories = ["All", "Academic", "Services", "Administrative", "Social"];
 
@@ -397,6 +398,9 @@ export default function MapPage() {
                   {routing ? "Hide route" : "Show route"}
                 </button>
               </div>
+
+              {/* Place reviews & images (renders only if profile exists) */}
+              <PlaceReviewsCard buildingId={selected.id} />
             </motion.div>
           )}
         </AnimatePresence>
