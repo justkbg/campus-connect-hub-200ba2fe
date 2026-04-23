@@ -21,6 +21,10 @@ import {
   relativeTime,
   saveStore,
 } from "@/data/channelsData";
+import MediaGallery from "./MediaGallery";
+import Reactions from "./Reactions";
+import Comments from "./Comments";
+import VerifiedBadge from "./VerifiedBadge";
 
 const TYPE_META: Record<
   Post["type"],
@@ -134,6 +138,9 @@ export default function PostCard({ post }: { post: Post }) {
           {post.body}
         </p>
 
+        {/* Media */}
+        {post.media && post.media.length > 0 && <MediaGallery media={post.media} />}
+
         {/* Event meta */}
         {post.event && (
           <div className="mt-3 flex items-center gap-2 text-[12px] text-foreground bg-muted rounded-xl px-3 py-2">
@@ -182,8 +189,10 @@ export default function PostCard({ post }: { post: Post }) {
 
         {/* Footer: author + actions */}
         <div className="mt-3 flex items-center justify-between gap-2">
-          <p className="text-[11px] text-muted-foreground truncate">
-            {post.authorName} · {post.authorRole}
+          <p className="text-[11px] text-muted-foreground truncate inline-flex items-center gap-1">
+            <span className="truncate">{post.authorName}</span>
+            {post.authorVerified && <VerifiedBadge />}
+            <span className="text-muted-foreground/70">· {post.authorRole}</span>
           </p>
           <div className="flex items-center gap-1">
             <button
@@ -218,6 +227,12 @@ export default function PostCard({ post }: { post: Post }) {
             )}
           </div>
         </div>
+
+        {/* Minimal reactions */}
+        <Reactions post={post} />
+
+        {/* Controlled comments */}
+        <Comments post={post} />
       </div>
     </motion.article>
   );

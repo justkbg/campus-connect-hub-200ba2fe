@@ -32,6 +32,24 @@ export type PostAttachment =
   | { kind: "link"; label: string; url: string }
   | { kind: "image"; label: string; url: string };
 
+// Strict, lightweight media — kept separate from attachments so the UI can render
+// a clean preview gallery (images) or a single thumbnail-based player (video).
+export type PostMedia =
+  | { kind: "image"; url: string; alt?: string; width?: number; height?: number }
+  | { kind: "video"; url: string; poster: string; durationSec?: number; alt?: string };
+
+export type ReactionKind = "helpful" | "important" | "seen";
+
+export type PostComment = {
+  id: string;
+  author: string;
+  authorRole: string;
+  verified?: boolean;
+  body: string;
+  publishedISO: string;
+  parentId?: string; // threaded
+};
+
 export type Post = {
   id: string;
   channelId: string;
@@ -40,16 +58,22 @@ export type Post = {
   body: string;
   authorName: string;
   authorRole: string;
+  authorVerified?: boolean;
   publishedISO: string;
   pinned?: boolean;
   priority?: "normal" | "high" | "critical";
   attachments?: PostAttachment[];
+  media?: PostMedia[];
   // optional structured metadata per type
   event?: { startISO: string; endISO?: string; location?: string };
   location?: { label: string; buildingId?: number };
   // engagement (kept minimal — no infinite social signals)
   saves?: number;
   reads?: number;
+  reactions?: Partial<Record<ReactionKind, number>>;
+  // controlled comments — default off; admins enable per post
+  commentsEnabled?: boolean;
+  comments?: PostComment[];
 };
 
 const now = Date.now();
@@ -214,6 +238,34 @@ export const posts: Post[] = [
     publishedISO: iso(60),
     event: { startISO: future(60 * 24), endISO: future(60 * 26), location: "LT3" },
     location: { label: "Lecture Theatre 3 (LT3)", buildingId: 2 },
+    media: [
+      {
+        kind: "image",
+        url: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200&q=70&auto=format&fit=crop",
+        alt: "Lecture theatre seating with projection screen",
+      },
+    ],
+    reactions: { helpful: 42, important: 18, seen: 156 },
+    commentsEnabled: true,
+    authorVerified: true,
+    comments: [
+      {
+        id: "c-5-1",
+        author: "Kofi M.",
+        authorRole: "Student · Level 300",
+        body: "Will the recording be shared for those who can't attend?",
+        publishedISO: iso(45),
+      },
+      {
+        id: "c-5-2",
+        author: "Dr. Ama Serwaa",
+        authorRole: "Course Lecturer",
+        verified: true,
+        body: "Yes — I'll upload it under Resources within 24h of the session.",
+        publishedISO: iso(40),
+        parentId: "c-5-1",
+      },
+    ],
   },
   {
     id: "p-6",
@@ -223,8 +275,10 @@ export const posts: Post[] = [
     body: "Outstanding balances must be cleared by Friday 5:00 PM to avoid examination hold. Pay via the student portal or any partner bank.",
     authorName: "Bursary Office",
     authorRole: "Office",
+    authorVerified: true,
     publishedISO: iso(300),
     priority: "high",
+    reactions: { important: 88, seen: 412 },
   },
   {
     id: "p-7",
@@ -234,10 +288,24 @@ export const posts: Post[] = [
     body: "Over 40 employers across finance, tech and consulting. Bring printed CVs. Dress code: business formal.",
     authorName: "Career Services Office",
     authorRole: "Office",
+    authorVerified: true,
     publishedISO: iso(360),
     event: { startISO: future(60 * 18), endISO: future(60 * 24), location: "Main Auditorium" },
     location: { label: "Main Auditorium", buildingId: 8 },
     attachments: [{ kind: "link", label: "Participating employers", url: "#" }],
+    media: [
+      {
+        kind: "image",
+        url: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1200&q=70&auto=format&fit=crop",
+        alt: "Career fair attendees networking",
+      },
+      {
+        kind: "image",
+        url: "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=1200&q=70&auto=format&fit=crop",
+        alt: "Employer booth at career event",
+      },
+    ],
+    reactions: { helpful: 64, important: 31, seen: 280 },
   },
   {
     id: "p-8",
@@ -351,6 +419,44 @@ export const saveStore = {
     writeSet(SAVE_KEY, s);
     return s.has(id);
   },
+};
+
+// ===== Reactions store: per (postId, kind) — single-select per user =====
+const REACT_KEY = "cis.posts.reactions";
+function readReactMap(): Record<string, ReactionKind> {
+  if (typeof window === "undefined") return {};
+  try {
+    return JSON.parse(window.localStorage.getItem(REACT_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+function writeReactMap(map: Record<string, ReactionKind>) {
+  try {
+    window.localStorage.setItem(REACT_KEY, JSON.stringify(map));
+  } catch {
+    /* ignore */
+  }
+}
+export const reactionStore = {
+  get: (postId: string): ReactionKind | null => readReactMap()[postId] ?? null,
+  set: (postId: string, kind: ReactionKind | null): ReactionKind | null => {
+    const map = readReactMap();
+    if (kind === null || map[postId] === kind) {
+      delete map[postId];
+      writeReactMap(map);
+      return null;
+    }
+    map[postId] = kind;
+    writeReactMap(map);
+    return kind;
+  },
+};
+
+export const reactionMeta: Record<ReactionKind, { label: string; tone: string }> = {
+  helpful: { label: "Helpful", tone: "text-success" },
+  important: { label: "Important", tone: "text-warning" },
+  seen: { label: "Seen", tone: "text-muted-foreground" },
 };
 
 // ===== Intelligence: Today's Key Updates =====

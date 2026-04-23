@@ -32,6 +32,7 @@ import AlumniHubPage from "./pages/AlumniHubPage";
 import ParentPortalPage from "./pages/ParentPortalPage";
 import ChannelsPage from "./pages/ChannelsPage";
 import ChannelDetailPage from "./pages/ChannelDetailPage";
+import ListingDetailPage from "./pages/ListingDetailPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -60,6 +61,7 @@ const App = () => {
               <Route path="/admin" element={<AdminPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/marketplace" element={<MarketplacePage />} />
+              <Route path="/marketplace/:id" element={<ListingDetailPage />} />
               <Route path="/resources" element={<ResourcesPage />} />
               <Route path="/lecturer" element={<LecturerPortalPage />} />
               <Route path="/course-rep" element={<CourseRepPortalPage />} />
