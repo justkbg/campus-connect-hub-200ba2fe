@@ -227,6 +227,12 @@ export default function PostCard({ post }: { post: Post }) {
             )}
           </div>
         </div>
+
+        {/* Minimal reactions */}
+        <Reactions post={post} />
+
+        {/* Controlled comments */}
+        <Comments post={post} />
       </div>
     </motion.article>
   );
