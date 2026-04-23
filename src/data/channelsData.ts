@@ -421,6 +421,44 @@ export const saveStore = {
   },
 };
 
+// ===== Reactions store: per (postId, kind) — single-select per user =====
+const REACT_KEY = "cis.posts.reactions";
+function readReactMap(): Record<string, ReactionKind> {
+  if (typeof window === "undefined") return {};
+  try {
+    return JSON.parse(window.localStorage.getItem(REACT_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+function writeReactMap(map: Record<string, ReactionKind>) {
+  try {
+    window.localStorage.setItem(REACT_KEY, JSON.stringify(map));
+  } catch {
+    /* ignore */
+  }
+}
+export const reactionStore = {
+  get: (postId: string): ReactionKind | null => readReactMap()[postId] ?? null,
+  set: (postId: string, kind: ReactionKind | null): ReactionKind | null => {
+    const map = readReactMap();
+    if (kind === null || map[postId] === kind) {
+      delete map[postId];
+      writeReactMap(map);
+      return null;
+    }
+    map[postId] = kind;
+    writeReactMap(map);
+    return kind;
+  },
+};
+
+export const reactionMeta: Record<ReactionKind, { label: string; tone: string }> = {
+  helpful: { label: "Helpful", tone: "text-success" },
+  important: { label: "Important", tone: "text-warning" },
+  seen: { label: "Seen", tone: "text-muted-foreground" },
+};
+
 // ===== Intelligence: Today's Key Updates =====
 // Surface critical/high-priority and time-sensitive posts from the last 24h.
 export function getTodaysKeyUpdates(limit = 3): Post[] {
